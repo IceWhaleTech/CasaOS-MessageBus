@@ -11,7 +11,7 @@ import (
 
 type EventTypeService struct {
 	ctx                *context.Context
-	repository         repository.Repository
+	repository         *repository.Repository
 	inboundChannel     chan model.Event
 	subscriberChannels map[string]map[string][]chan model.Event
 	stop               chan struct{}
@@ -25,19 +25,19 @@ var (
 )
 
 func (s *EventTypeService) GetEventTypes() ([]model.EventType, error) {
-	return s.repository.GetEventTypes()
+	return (*s.repository).GetEventTypes()
 }
 
 func (s *EventTypeService) RegisterEventType(eventType model.EventType) (*model.EventType, error) {
-	return s.repository.RegisterEventType(eventType)
+	return (*s.repository).RegisterEventType(eventType)
 }
 
 func (s *EventTypeService) GetEventTypesBySourceID(sourceID string) ([]model.EventType, error) {
-	return s.repository.GetEventTypesBySourceID(sourceID)
+	return (*s.repository).GetEventTypesBySourceID(sourceID)
 }
 
 func (s *EventTypeService) GetEventType(sourceID string, name string) (*model.EventType, error) {
-	return s.repository.GetEventType(sourceID, name)
+	return (*s.repository).GetEventType(sourceID, name)
 }
 
 func (s *EventTypeService) Publish(event model.Event) (*model.Event, error) {
@@ -177,8 +177,8 @@ func (s *EventTypeService) Start(ctx *context.Context) {
 	}
 }
 
-func NewEventTypeService(repository repository.Repository) EventTypeService {
-	return EventTypeService{
+func NewEventTypeService(repository *repository.Repository) *EventTypeService {
+	return &EventTypeService{
 		repository: repository,
 	}
 }

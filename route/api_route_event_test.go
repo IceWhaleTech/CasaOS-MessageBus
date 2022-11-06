@@ -37,7 +37,7 @@ func TestEventRoute(t *testing.T) {
 	assert.NilError(t, err)
 	defer repository.Close()
 
-	services := service.NewServices(repository)
+	services := service.NewServices(&repository)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

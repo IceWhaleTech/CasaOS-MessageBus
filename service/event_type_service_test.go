@@ -19,7 +19,7 @@ func TestEventTypeService(t *testing.T) {
 	defer repository.Close()
 
 	// new service
-	service := NewEventTypeService(repository)
+	service := NewEventTypeService(&repository)
 
 	// new context
 	ctx, cancel := context.WithCancel(context.Background())
