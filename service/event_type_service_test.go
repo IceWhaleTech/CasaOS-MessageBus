@@ -13,18 +13,19 @@ import (
 func TestEventTypeService(t *testing.T) {
 	defer goleak.VerifyNone(t)
 
-	// new context
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	// new repository
-	repository, err := repository.NewInMemoryRepository(&ctx)
+	repository, err := repository.NewInMemoryRepository()
 	assert.NilError(t, err)
 	defer repository.Close()
 
 	// new service
-	service := NewEventTypeService(&ctx, repository)
-	go service.Start()
+	service := NewEventTypeService(repository)
+
+	// new context
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go service.Start(&ctx)
 
 	sourceID := "Foo"
 	name := "Bar"
@@ -77,10 +78,11 @@ func TestEventTypeService(t *testing.T) {
 		},
 	}
 
-	_, err = service.Publish(expectedEvent)
+	actualEvent1, err := service.Publish(expectedEvent)
 	assert.NilError(t, err)
+	assert.DeepEqual(t, model.Event{SourceID: actualEvent1.SourceID, Name: actualEvent1.Name, Properties: actualEvent1.Properties}, expectedEvent)
 
-	actualEvent, ok := <-outputChannel
+	actualEvent2, ok := <-outputChannel
 	assert.Equal(t, ok, true)
-	assert.DeepEqual(t, actualEvent, expectedEvent)
+	assert.DeepEqual(t, actualEvent2, *actualEvent1)
 }

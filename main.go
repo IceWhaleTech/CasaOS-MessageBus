@@ -42,17 +42,17 @@ func main() {
 		panic(err)
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	repository, err := repository.NewInMemoryRepository(&ctx)
+	repository, err := repository.NewInMemoryRepository()
 	if err != nil {
 		panic(err)
 	}
 	defer repository.Close()
 
-	services := service.NewServices(&ctx, repository)
-	services.Start()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	services := service.NewServices(repository)
+	services.Start(&ctx)
 
 	apiRouter, err := route.NewAPIRouter(swagger, services)
 	if err != nil {

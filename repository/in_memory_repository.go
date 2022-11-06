@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"context"
-
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -57,14 +55,10 @@ func (r *InMemoryRepository) Close() {
 	}
 }
 
-func NewInMemoryRepository(ctx *context.Context) (Repository, error) {
+func NewInMemoryRepository() (Repository, error) {
 	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"))
 	if err != nil {
 		return nil, err
-	}
-
-	if ctx != nil {
-		db = db.WithContext(*ctx)
 	}
 
 	if err := db.AutoMigrate(&model.EventType{}, &model.PropertyType{}); err != nil {

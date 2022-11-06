@@ -2,6 +2,7 @@ package route
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/IceWhaleTech/CasaOS-MessageBus/codegen"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/route/adapter/in"
@@ -62,10 +63,19 @@ func (r *APIRoute) GetEventType(ctx echo.Context, sourceID codegen.SourceId, nam
 }
 
 func (r *APIRoute) PublishEvent(ctx echo.Context, sourceID codegen.SourceId, name codegen.Name) error {
-	var event codegen.Event
-	if err := ctx.Bind(&event); err != nil {
+	var properties []codegen.Property
+	if err := ctx.Bind(&properties); err != nil {
 		message := err.Error()
 		return ctx.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
+	}
+
+	timestamp := time.Now()
+
+	event := codegen.Event{
+		SourceID:   &sourceID,
+		Name:       &name,
+		Properties: &properties,
+		Timestamp:  &timestamp,
 	}
 
 	result, err := r.services.EventTypeService.Publish(in.EventAdapter(event))

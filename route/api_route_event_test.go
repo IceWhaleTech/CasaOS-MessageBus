@@ -33,15 +33,15 @@ func TestEventRoute(t *testing.T) {
 	eventTypeJSON, err := json2.Marshal(expectedEventType)
 	assert.NilError(t, err)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	repository, err := repository.NewInMemoryRepository(&ctx)
+	repository, err := repository.NewInMemoryRepository()
 	assert.NilError(t, err)
 	defer repository.Close()
 
-	services := service.NewServices(&ctx, repository)
-	services.Start()
+	services := service.NewServices(repository)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	services.Start(&ctx)
 
 	apiRoute := NewAPIRoute(services)
 

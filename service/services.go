@@ -10,12 +10,12 @@ type Services struct {
 	EventTypeService EventTypeService
 }
 
-func (s *Services) Start() {
-	go s.EventTypeService.Start()
+func (s *Services) Start(ctx *context.Context) {
+	go s.EventTypeService.Start(ctx)
 }
 
-func NewServices(ctx *context.Context, repository repository.Repository) Services {
+func NewServices(repository repository.Repository) Services {
 	return Services{
-		EventTypeService: NewEventTypeService(ctx, repository),
+		EventTypeService: NewEventTypeService(repository),
 	}
 }
