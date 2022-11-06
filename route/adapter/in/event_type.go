@@ -12,6 +12,7 @@ func EventTypeAdapter(eventType codegen.EventType) model.EventType {
 	}
 
 	return model.EventType{
+		SourceID:         *eventType.SourceID,
 		Name:             *eventType.Name,
 		PropertyTypeList: propertyTypeList,
 	}

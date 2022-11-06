@@ -49,6 +49,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer repository.Close()
 
 	services := service.NewServices(&ctx, repository)
 

@@ -24,6 +24,7 @@ func TestEventTypeService(t *testing.T) {
 
 	// new service
 	service := NewEventTypeService(&ctx, repository)
+	go service.Start()
 
 	sourceID := "Foo"
 	name := "Bar"
@@ -53,8 +54,7 @@ func TestEventTypeService(t *testing.T) {
 	assert.Equal(t, eventType.SourceID, sourceID)
 	assert.Equal(t, eventType.Name, name)
 
-	go service.Start()
-
+	// subscribe event type
 	channel, err := service.Subscribe(sourceID, name)
 	assert.NilError(t, err)
 
@@ -82,11 +82,5 @@ func TestEventTypeService(t *testing.T) {
 
 	actualEvent, ok := <-outputChannel
 	assert.Equal(t, ok, true)
-	assert.Equal(t, actualEvent.Name, expectedEvent.Name)
-	assert.Equal(t, actualEvent.SourceID, expectedEvent.SourceID)
-
-	for i, property := range actualEvent.Properties {
-		assert.Equal(t, property.Name, expectedEvent.Properties[i].Name)
-		assert.Equal(t, property.Value, expectedEvent.Properties[i].Value)
-	}
+	assert.DeepEqual(t, actualEvent, expectedEvent)
 }
