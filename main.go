@@ -52,6 +52,7 @@ func main() {
 	defer repository.Close()
 
 	services := service.NewServices(&ctx, repository)
+	services.Start()
 
 	apiRouter, err := route.NewAPIRouter(swagger, services)
 	if err != nil {
