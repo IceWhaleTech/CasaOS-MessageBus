@@ -48,18 +48,19 @@ func main() {
 	}
 	defer repository.Close()
 
+	services := service.NewServices(repository)
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	services := service.NewServices(repository)
 	services.Start(&ctx)
 
-	apiRouter, err := route.NewAPIRouter(swagger, services)
+	apiRouter, err := route.NewAPIRouter(swagger, &services)
 	if err != nil {
 		panic(err)
 	}
 
-	wsRouter := route.NewWebSocketRouter(services)
+	wsRouter := route.NewWebSocketRouter(&services)
 
 	docRouter, err := route.NewDocRouter(swagger, _docHTML, _docYAML)
 	if err != nil {

@@ -43,7 +43,7 @@ func TestEventRoute(t *testing.T) {
 	defer cancel()
 	services.Start(&ctx)
 
-	apiRoute := NewAPIRoute(services)
+	apiRoute := NewAPIRoute(&services)
 
 	e := echo.New()
 

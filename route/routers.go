@@ -14,7 +14,7 @@ import (
 	echo_middleware "github.com/labstack/echo/v4/middleware"
 )
 
-func NewAPIRouter(swagger *openapi3.T, services service.Services) (http.Handler, error) {
+func NewAPIRouter(swagger *openapi3.T, services *service.Services) (http.Handler, error) {
 	apiRoute := NewAPIRoute(services)
 
 	e := echo.New()
@@ -68,7 +68,7 @@ func NewDocRouter(swagger *openapi3.T, docHTML string, docYAML string) (http.Han
 	}), nil
 }
 
-func NewWebSocketRouter(services service.Services) http.Handler {
+func NewWebSocketRouter(services *service.Services) http.Handler {
 	wsRoute := NewWebSocketRoute(services)
 
 	e := echo.New()

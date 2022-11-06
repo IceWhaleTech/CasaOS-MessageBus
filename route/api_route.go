@@ -6,10 +6,10 @@ import (
 )
 
 type APIRoute struct {
-	services service.Services
+	services *service.Services
 }
 
-func NewAPIRoute(services service.Services) codegen.ServerInterface {
+func NewAPIRoute(services *service.Services) codegen.ServerInterface {
 	return &APIRoute{
 		services: services,
 	}
