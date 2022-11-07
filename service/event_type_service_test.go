@@ -14,7 +14,7 @@ func TestEventTypeService(t *testing.T) {
 	defer goleak.VerifyNone(t)
 
 	// new repository
-	repository, err := repository.NewInMemoryRepository()
+	repository, err := repository.NewDatabaseRepositoryInMemory()
 	assert.NilError(t, err)
 	defer repository.Close()
 

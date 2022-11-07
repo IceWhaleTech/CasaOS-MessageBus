@@ -9,9 +9,15 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
+	"github.com/IceWhaleTech/CasaOS-Common/external"
+	"github.com/IceWhaleTech/CasaOS-Common/model"
+	"github.com/IceWhaleTech/CasaOS-Common/utils/file"
 	util_http "github.com/IceWhaleTech/CasaOS-Common/utils/http"
 	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/codegen"
@@ -34,10 +40,10 @@ var (
 	_docYAML string
 )
 
-func init() {
+func main() {
+	// arguments
 	configFlag := flag.String("c", "", "config file path")
 	dbFlag := flag.String("d", "", "db path")
-
 	versionFlag := flag.Bool("v", false, "version")
 
 	flag.Parse()
@@ -47,42 +53,41 @@ func init() {
 		os.Exit(0)
 	}
 
+	// initialization
 	config.InitSetup(*configFlag)
 
 	logger.LogInit(config.AppInfo.LogPath, config.AppInfo.LogSaveName, config.AppInfo.LogFileExt)
 
+	// repository
 	if len(*dbFlag) == 0 {
 		*dbFlag = config.AppInfo.DBPath
 	}
 
-	// TODO db repository
-}
-
-func main() {
-	logger.LogInit("/tmp", "goxin", "log")
-
-	listener, err := net.Listen("tcp", net.JoinHostPort(localhost, "8080"))
-	if err != nil {
+	if err := file.IsNotExistMkDir(*dbFlag); err != nil {
 		panic(err)
 	}
 
-	swagger, err := codegen.GetSwagger()
-	if err != nil {
-		panic(err)
-	}
+	databaseFilePath := filepath.Join(*dbFlag, "message-bus.db")
 
-	repository, err := repository.NewInMemoryRepository()
+	repository, err := repository.NewDatabaseRepository(databaseFilePath)
 	if err != nil {
 		panic(err)
 	}
 	defer repository.Close()
 
+	// service
 	services := service.NewServices(&repository)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	services.Start(&ctx)
+
+	// route
+	swagger, err := codegen.GetSwagger()
+	if err != nil {
+		panic(err)
+	}
 
 	apiRouter, err := route.NewAPIRouter(swagger, &services)
 	if err != nil {
@@ -104,6 +109,38 @@ func main() {
 		},
 	}
 
+	// http listener
+	listener, err := net.Listen("tcp", net.JoinHostPort(localhost, "0"))
+	if err != nil {
+		panic(err)
+	}
+
+	// register at gateway
+	u, err := url.Parse(swagger.Servers[0].URL)
+	if err != nil {
+		panic(err)
+	}
+
+	apiPath := strings.TrimRight(u.Path, "/")
+	apiPaths := []string{apiPath, "/doc" + apiPath}
+
+	gatewayManagement, err := external.NewManagementService(config.CommonInfo.RuntimePath)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, apiPath := range apiPaths {
+		err = gatewayManagement.CreateRoute(&model.Route{
+			Path:   apiPath,
+			Target: "http://" + listener.Addr().String(),
+		})
+
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	// notify systemd
 	if supported, err := daemon.SdNotify(false, daemon.SdNotifyReady); err != nil {
 		logger.Error("Failed to notify systemd that message bus service is ready", zap.Error(err))
 	} else if supported {
@@ -112,6 +149,7 @@ func main() {
 		logger.Info("This process is not running as a systemd service.")
 	}
 
+	// start http server
 	logger.Info("MessageBus service is listening...", zap.Any("address", listener.Addr().String()))
 
 	server := &http.Server{
@@ -120,7 +158,5 @@ func main() {
 	}
 
 	err = server.Serve(listener)
-	if err != nil {
-		panic(err)
-	}
+	logger.Info("MessageBus service is stopped", zap.Error(err))
 }

@@ -33,7 +33,7 @@ func TestEventRoute(t *testing.T) {
 	eventTypeJSON, err := json2.Marshal(expectedEventType)
 	assert.NilError(t, err)
 
-	repository, err := repository.NewInMemoryRepository()
+	repository, err := repository.NewDatabaseRepositoryInMemory()
 	assert.NilError(t, err)
 	defer repository.Close()
 
