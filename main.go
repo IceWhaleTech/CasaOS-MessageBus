@@ -5,13 +5,18 @@ package main
 import (
 	"context"
 	_ "embed"
+	"flag"
+	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	util_http "github.com/IceWhaleTech/CasaOS-Common/utils/http"
 	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/codegen"
+	"github.com/IceWhaleTech/CasaOS-MessageBus/common"
+	"github.com/IceWhaleTech/CasaOS-MessageBus/config"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/repository"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/route"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/service"
@@ -28,6 +33,30 @@ var (
 	//go:embed api/message_bus/openapi.yaml
 	_docYAML string
 )
+
+func init() {
+	configFlag := flag.String("c", "", "config file path")
+	dbFlag := flag.String("d", "", "db path")
+
+	versionFlag := flag.Bool("v", false, "version")
+
+	flag.Parse()
+
+	if *versionFlag {
+		fmt.Printf("v%s\n", common.Version)
+		os.Exit(0)
+	}
+
+	config.InitSetup(*configFlag)
+
+	logger.LogInit(config.AppInfo.LogPath, config.AppInfo.LogSaveName, config.AppInfo.LogFileExt)
+
+	if len(*dbFlag) == 0 {
+		*dbFlag = config.AppInfo.DBPath
+	}
+
+	// TODO db repository
+}
 
 func main() {
 	logger.LogInit("/tmp", "goxin", "log")
