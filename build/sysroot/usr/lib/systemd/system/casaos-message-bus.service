@@ -1,0 +1,14 @@
+[Unit]
+After=casaos-gateway.service
+ConditionFileNotEmpty=/etc/casaos/message-bus.conf
+Description=CasaOS Message Bus Service
+
+[Service]
+ExecStartPre=/usr/bin/casaos-message-bus -v
+ExecStart=/usr/bin/casaos-message-bus -c /etc/casaos/message-bus.conf
+PIDFile=/var/run/casaos/message-bus.pid
+Restart=always
+Type=notify
+
+[Install]
+WantedBy=multi-user.target
