@@ -29,6 +29,8 @@ func (s *EventTypeService) GetEventTypes() ([]model.EventType, error) {
 }
 
 func (s *EventTypeService) RegisterEventType(eventType model.EventType) (*model.EventType, error) {
+	// TODO - ensure sourceID and name are URL safe
+
 	return (*s.repository).RegisterEventType(eventType)
 }
 
@@ -48,6 +50,8 @@ func (s *EventTypeService) Publish(event model.Event) (*model.Event, error) {
 	if event.Timestamp == 0 {
 		event.Timestamp = time.Now().Unix()
 	}
+
+	// TODO - ensure properties are valid for event type
 
 	select {
 	case s.inboundChannel <- event:
