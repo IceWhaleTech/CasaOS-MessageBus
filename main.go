@@ -1,4 +1,4 @@
-//go:generate bash -c "mkdir -p codegen && go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest -package codegen api/message_bus/openapi.yaml > codegen/message_bus_api.go"
+//go:generate bash -c "mkdir -p codegen && go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.11.0 -package codegen api/message_bus/openapi.yaml > codegen/message_bus_api.go"
 
 package main
 
@@ -94,8 +94,6 @@ func main() {
 		panic(err)
 	}
 
-	wsRouter := route.NewWebSocketRouter(&services)
-
 	docRouter, err := route.NewDocRouter(swagger, _docHTML, _docYAML)
 	if err != nil {
 		panic(err)
@@ -104,7 +102,6 @@ func main() {
 	mux := &util_http.HandlerMultiplexer{
 		HandlerMap: map[string]http.Handler{
 			"v2":  apiRouter,
-			"ws":  wsRouter,
 			"doc": docRouter,
 		},
 	}

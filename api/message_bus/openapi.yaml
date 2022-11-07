@@ -1,18 +1,72 @@
 openapi: 3.0.3
 
 info:
-  title: (TODO)
+  title: CasaOS Message Bus API
   version: v2
   description: |
-    (TODO))
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/IceWhaleTech/logo/main/casaos/casaos_banner_dark_night_800px.png">
+        <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/IceWhaleTech/logo/main/casaos/casaos_banner_twilight_blue_800px.png">
+        <img alt="CasaOS" src="https://raw.githubusercontent.com/IceWhaleTech/logo/main/casaos/casaos_banner_twilight_blue_800px.png">
+    </picture>
+
+    CasaOS Message Bus accepts events and actions from various sources and delivers them to subscribers.
+
+    For issues and discussions, please visit the [GitHub repository](https://github.com/IceWhaleTech/CasaOS) or join [our Discord](https://discord.gg/knqAbbBbeX).
 
 servers:
   - url: /v2/message_bus
 
+tags:
+  - name: Event methods
+    description: |-
+      methods for managing event types, as well as publishing and subscribing to events
+
+  - name: Action methods
+    description: |-
+      methods for managing action types, as well as publishing and subscribing to actions
+
+  - name: EventType
+    description: |-
+      <SchemaDefinition schemaRef="#/components/schemas/EventType" />
+
+  - name: Event
+    description: |-
+      <SchemaDefinition schemaRef="#/components/schemas/Event" />
+
+  - name: ActionType
+    description: |-
+      <SchemaDefinition schemaRef="#/components/schemas/ActionType" />
+
+  - name: Action
+    description: |-
+      <SchemaDefinition schemaRef="#/components/schemas/Action" />
+
+x-tagGroups:
+  - name: Methods
+    tags:
+      - Event methods
+      - Action methods
+
+  - name: Schemas
+    tags:
+      - EventType
+      - Event
+      - ActionType
+      - Action
+
+security:
+  - access_token: []
+
 paths:
   /event_type:
     get:
+      summary: List event types
+      description: |
+        List all event types that are currently registered with the message bus.
       operationId: getEventTypes
+      tags:
+        - Event methods
       responses:
         "200":
           $ref: "#/components/responses/GetEventTypesOK"
@@ -20,7 +74,12 @@ paths:
           $ref: "#/components/responses/ResponseInternalServerError"
 
     post:
+      summary: Register an event type
+      description: |
+        Register a new event type with the message bus.
       operationId: RegisterEventType
+      tags:
+        - Event methods
       requestBody:
         $ref: "#/components/requestBodies/RegisterEventType"
       responses:
@@ -33,7 +92,12 @@ paths:
 
   /event_type/{source_id}:
     get:
+      summary: Get event types by source ID
+      description: |
+        Get all event types that are registered with the message bus for a specific source ID.
       operationId: getEventTypesBySourceID
+      tags:
+        - Event methods
       parameters:
         - $ref: "#/components/parameters/SourceId"
       responses:
@@ -44,7 +108,12 @@ paths:
 
   /event_type/{source_id}/{name}:
     get:
+      summary: Get an event type by source ID and name
+      description: |
+        Get an event type that is registered with the message bus for a specific source ID and event name.
       operationId: getEventType
+      tags:
+        - Event methods
       parameters:
         - $ref: "#/components/parameters/SourceId"
         - $ref: "#/components/parameters/Name"
@@ -55,7 +124,12 @@ paths:
           $ref: "#/components/responses/ResponseNotFound"
 
     post:
+      summary: Publish an event
+      description: |
+        Publish an event to the message bus.
       operationId: publishEvent
+      tags:
+        - Event methods
       parameters:
         - $ref: "#/components/parameters/SourceId"
         - $ref: "#/components/parameters/Name"
@@ -68,6 +142,22 @@ paths:
           $ref: "#/components/responses/ResponseBadRequest"
         "404":
           $ref: "#/components/responses/ResponseNotFound"
+
+  /event_type/{source_id}/{name}/ws:
+    get:
+      summary: Subscribe to an event type (WebSocket)
+      description: |
+        Subscribe to an event type by source ID and name via WebSocket.
+      operationId: subscribeEvent
+      tags:
+        - Event methods
+      parameters:
+        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/Name"
+      responses:
+        "101":
+          description: |
+            The connection will be upgraded to a WebSocket connection and the client will receive events as they are published.
 
   /action_type:
     get:
@@ -127,6 +217,13 @@ paths:
           $ref: "#/components/responses/ResponseNotFound"
 
 components:
+
+  securitySchemes:
+    access_token:
+      type: apiKey
+      in: header
+      name: Authorization
+
   parameters:
     SourceId:
       name: source_id

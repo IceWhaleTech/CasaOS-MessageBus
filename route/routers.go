@@ -3,8 +3,11 @@ package route
 import (
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
+	"github.com/IceWhaleTech/CasaOS-Common/utils/common_err"
+	"github.com/IceWhaleTech/CasaOS-Common/utils/jwt"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/codegen"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/service"
 	"github.com/deepmap/oapi-codegen/pkg/middleware"
@@ -31,6 +34,27 @@ func NewAPIRouter(swagger *openapi3.T, services *service.Services) (http.Handler
 	e.Use(echo_middleware.Gzip())
 
 	e.Use(echo_middleware.Logger())
+
+	e.Use(echo_middleware.JWTWithConfig(echo_middleware.JWTConfig{
+		Skipper: func(c echo.Context) bool {
+			return c.RealIP() == "::1" || c.RealIP() == "127.0.0.1"
+		},
+		ParseTokenFunc: func(token string, c echo.Context) (interface{}, error) {
+			claims, code := jwt.Validate(token)
+			if code != common_err.SUCCESS {
+				return nil, echo.ErrUnauthorized
+			}
+
+			c.Request().Header.Set("user_id", strconv.Itoa(claims.ID))
+
+			return claims, nil
+		},
+		TokenLookupFuncs: []echo_middleware.ValuesExtractor{
+			func(c echo.Context) ([]string, error) {
+				return []string{c.Request().Header.Get(echo.HeaderAuthorization)}, nil
+			},
+		},
+	}))
 
 	e.Use(middleware.OapiRequestValidatorWithOptions(swagger, &middleware.Options{Options: openapi3filter.Options{AuthenticationFunc: openapi3filter.NoopAuthenticationFunc}}))
 
@@ -66,25 +90,6 @@ func NewDocRouter(swagger *openapi3.T, docHTML string, docYAML string) (http.Han
 			}
 		}
 	}), nil
-}
-
-func NewWebSocketRouter(services *service.Services) http.Handler {
-	wsRoute := NewWebSocketRoute(services)
-
-	e := echo.New()
-
-	e.Use(echo_middleware.Gzip())
-
-	e.Use(echo_middleware.Logger())
-
-	v2Group := e.Group("/ws")
-	v2WebSocketGroup := v2Group.Group("/v2")
-
-	v2WebSocketMessageBusGroup := v2WebSocketGroup.Group("/message_bus")
-	v2WebSocketMessageBusGroup.GET("/event_type/:source_id/:name", wsRoute.SubscribeEvents)
-	v2WebSocketMessageBusGroup.GET("/action_type/:source_id/:name", wsRoute.SubscribeActions)
-
-	return e
 }
 
 func getSwaggerURL(swagger *openapi3.T) string {

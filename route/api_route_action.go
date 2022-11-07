@@ -24,7 +24,3 @@ func (r *APIRoute) GetActionType(ctx echo.Context, sourceID codegen.SourceId, na
 func (r *APIRoute) TriggerAction(ctx echo.Context, sourceID codegen.SourceId, name codegen.Name) error {
 	panic("implement me") // TODO: Implement
 }
-
-func (r *WebSocketRoute) SubscribeActions(c echo.Context) error {
-	panic("not implemented") // TODO: Implement
-}
