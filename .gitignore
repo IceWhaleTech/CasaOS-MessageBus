@@ -14,10 +14,8 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-codegen/
-
-# vscode
 .vscode/
-
+dist/
+target/
+codegen/
 __debug_bin
-goxin
