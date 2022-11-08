@@ -19,6 +19,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const basePath = "/v2/message_bus"
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "message-bus-tool",
@@ -43,8 +45,5 @@ func init() {
 	// will be global for your application.
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.message-bus-tool.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().StringP("base-url", "u", "http://localhost:80", "base url of CasaOS")
 }
