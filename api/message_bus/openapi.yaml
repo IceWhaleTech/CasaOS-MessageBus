@@ -1,0 +1,475 @@
+openapi: 3.0.3
+
+info:
+  title: CasaOS Message Bus API
+  version: v2
+  description: |
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/IceWhaleTech/logo/main/casaos/casaos_banner_dark_night_800px.png">
+        <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/IceWhaleTech/logo/main/casaos/casaos_banner_twilight_blue_800px.png">
+        <img alt="CasaOS" src="https://raw.githubusercontent.com/IceWhaleTech/logo/main/casaos/casaos_banner_twilight_blue_800px.png">
+    </picture>
+
+    CasaOS Message Bus accepts events and actions from various sources and delivers them to subscribers.
+
+    For issues and discussions, please visit the [GitHub repository](https://github.com/IceWhaleTech/CasaOS) or join [our Discord](https://discord.gg/knqAbbBbeX).
+
+servers:
+  - url: /v2/message_bus
+
+tags:
+  - name: Event methods
+    description: |-
+      methods for managing event types, as well as publishing and subscribing to events
+
+  - name: Action methods
+    description: |-
+      methods for managing action types, as well as publishing and subscribing to actions
+
+  - name: EventType
+    description: |-
+      <SchemaDefinition schemaRef="#/components/schemas/EventType" />
+
+  - name: Event
+    description: |-
+      <SchemaDefinition schemaRef="#/components/schemas/Event" />
+
+  - name: ActionType
+    description: |-
+      <SchemaDefinition schemaRef="#/components/schemas/ActionType" />
+
+  - name: Action
+    description: |-
+      <SchemaDefinition schemaRef="#/components/schemas/Action" />
+
+x-tagGroups:
+  - name: Methods
+    tags:
+      - Event methods
+      - Action methods
+
+  - name: Schemas
+    tags:
+      - EventType
+      - Event
+      - ActionType
+      - Action
+
+security:
+  - access_token: []
+
+paths:
+  /event_type:
+    get:
+      summary: List event types
+      description: |
+        List all event types that are currently registered with the message bus.
+      operationId: getEventTypes
+      tags:
+        - Event methods
+      responses:
+        "200":
+          $ref: "#/components/responses/GetEventTypesOK"
+        "500":
+          $ref: "#/components/responses/ResponseInternalServerError"
+
+    post:
+      summary: Register an event type
+      description: |
+        Register a new event type with the message bus.
+      operationId: RegisterEventType
+      tags:
+        - Event methods
+      requestBody:
+        $ref: "#/components/requestBodies/RegisterEventType"
+      responses:
+        "201":
+          $ref: "#/components/responses/RegisterEventTypeOK"
+        "400":
+          $ref: "#/components/responses/ResponseBadRequest"
+        "409":
+          $ref: "#/components/responses/ResponseConflict"
+
+  /event_type/{source_id}:
+    get:
+      summary: Get event types by source ID
+      description: |
+        Get all event types that are registered with the message bus for a specific source ID.
+      operationId: getEventTypesBySourceID
+      tags:
+        - Event methods
+      parameters:
+        - $ref: "#/components/parameters/SourceId"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetEventTypesOK"
+        "404":
+          $ref: "#/components/responses/ResponseNotFound"
+
+  /event_type/{source_id}/{name}:
+    get:
+      summary: Get an event type by source ID and name
+      description: |
+        Get an event type that is registered with the message bus for a specific source ID and event name.
+      operationId: getEventType
+      tags:
+        - Event methods
+      parameters:
+        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/Name"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetEventTypeOK"
+        "404":
+          $ref: "#/components/responses/ResponseNotFound"
+
+    post:
+      summary: Publish an event
+      description: |
+        Publish an event to the message bus.
+      operationId: publishEvent
+      tags:
+        - Event methods
+      parameters:
+        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/Name"
+      requestBody:
+        $ref: "#/components/requestBodies/PublishEvent"
+      responses:
+        "201":
+          $ref: "#/components/responses/PublishEventOK"
+        "400":
+          $ref: "#/components/responses/ResponseBadRequest"
+        "404":
+          $ref: "#/components/responses/ResponseNotFound"
+
+  /event_type/{source_id}/{name}/ws:
+    get:
+      summary: Subscribe to an event type (WebSocket)
+      description: |
+        Subscribe to an event type by source ID and name via WebSocket.
+      operationId: subscribeEvent
+      tags:
+        - Event methods
+      parameters:
+        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/Name"
+      responses:
+        "101":
+          description: |
+            The connection will be upgraded to a WebSocket connection and the client will receive events as they are published.
+
+  /action_type:
+    get:
+      operationId: getActionTypes
+      responses:
+        "200":
+          $ref: "#/components/responses/GetActionTypesOK"
+
+    post:
+      operationId: RegisterActionType
+      requestBody:
+        $ref: "#/components/requestBodies/RegisterActionType"
+      responses:
+        "201":
+          $ref: "#/components/responses/RegisterActionTypeOK"
+        "400":
+          $ref: "#/components/responses/ResponseBadRequest"
+        "409":
+          $ref: "#/components/responses/ResponseConflict"
+
+  /action_type/{source_id}:
+    get:
+      operationId: getActionTypesBySourceID
+      parameters:
+        - $ref: "#/components/parameters/SourceId"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetActionTypesOK"
+        "404":
+          $ref: "#/components/responses/ResponseNotFound"
+
+  /action_type/{source_id}/{name}:
+    get:
+      operationId: getActionType
+      parameters:
+        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/Name"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetActionTypeOK"
+        "404":
+          $ref: "#/components/responses/ResponseNotFound"
+
+    post:
+      operationId: triggerAction
+      parameters:
+        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/Name"
+      requestBody:
+        $ref: "#/components/requestBodies/TriggerAction"
+      responses:
+        "202":
+          $ref: "#/components/responses/TriggerActionOK"
+        "400":
+          $ref: "#/components/responses/ResponseBadRequest"
+        "404":
+          $ref: "#/components/responses/ResponseNotFound"
+
+components:
+
+  securitySchemes:
+    access_token:
+      type: apiKey
+      in: header
+      name: Authorization
+
+  parameters:
+    SourceId:
+      name: source_id
+      in: path
+      required: true
+      schema:
+        type: string
+
+    Name:
+      name: name
+      in: path
+      required: true
+      schema:
+        type: string
+
+  requestBodies:
+    RegisterEventType:
+      description: (TODO)
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EventType"
+
+    PublishEvent:
+      description: (TODO)
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Property"
+
+    RegisterActionType:
+      description: (TODO)
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ActionType"
+
+    TriggerAction:
+      description: (TODO)
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Property"
+
+  responses:
+    ResponseInternalServerError:
+      description: (TODO)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BaseResponse"
+
+    ResponseNotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BaseResponse"
+          example:
+            message: "Not Found"
+
+    ResponseBadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BaseResponse"
+          example:
+            message: "Bad Request"
+
+    ResponseConflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BaseResponse"
+          example:
+            message: "Conflict"
+
+    GetEventTypesOK:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/EventType"
+
+    GetEventTypeOK:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EventType"
+
+    RegisterEventTypeOK:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EventType"
+
+    PublishEventOK:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Event"
+
+    GetActionTypesOK:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/ActionType"
+
+    GetActionTypeOK:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ActionType"
+
+    RegisterActionTypeOK:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ActionType"
+
+    TriggerActionOK:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Action"
+
+  schemas:
+    BaseResponse:
+      properties:
+        message:
+          readOnly: true
+          description: message returned by server side if there is any
+          type: string
+          example: ""
+
+    PropertyType:
+      type: object
+      properties:
+        name:
+          type: string
+          description: property name
+          example: "local-storage:path"
+
+    EventType:
+      type: object
+      properties:
+        sourceID:
+          type: string
+          description: event source id to identify where the event comes from
+          example: "local-storage"
+        name:
+          type: string
+          description: |-
+            event name
+
+            (there is no naming convention for event names, but it is recommended to name each as structural and descriptive as possible)
+          example: "local-storage:disk:added"
+        propertyTypeList:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyType"
+
+    Property:
+      type: object
+      properties:
+        name:
+          type: string
+          description: property name
+        value:
+          type: string
+          description: property value
+
+    Event:
+      type: object
+      properties:
+        sourceID:
+          type: string
+          description: associated source id
+        name:
+          type: string
+          description: event name
+        properties:
+          type: array
+          description: event properties
+          items:
+            $ref: "#/components/schemas/Property"
+        timestamp:
+          type: string
+          description: timestamp this event took place
+          format: date-time
+
+    ActionType:
+      type: object
+      properties:
+        sourceID:
+          type: string
+          description: action source id to identify where the action will take
+          example: "local-storage"
+        name:
+          type: string
+          description: |-
+            action name
+
+            (there is no naming convention for action names, but it is recommended to name each as structural and descriptive as possible)
+          example: "local-storage:disk:format"
+        propertyTypeList:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyType"
+
+    Action:
+      type: object
+      properties:
+        sourceID:
+          type: string
+          description: associated source id
+        name:
+          type: string
+          description: action name
+        properties:
+          type: array
+          description: action properties
+          items:
+            $ref: "#/components/schemas/Property"
+        timestamp:
+          type: string
+          description: timestamp this action took place
+          format: date-time
