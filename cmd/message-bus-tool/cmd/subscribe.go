@@ -4,7 +4,9 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"log"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/net/websocket"
@@ -17,15 +19,36 @@ var subscribeCmd = &cobra.Command{
 	Use:   "subscribe",
 	Short: "subscribe to a websocket URL",
 	Run: func(cmd *cobra.Command, args []string) {
-		url := cmd.Flag("url").Value.String()
+		baseURL, err := rootCmd.PersistentFlags().GetString("base-url")
+		if err != nil {
+			panic(err)
+		}
+
+		sourceID, err := cmd.Flags().GetString("source-id")
+		if err != nil {
+			panic(err)
+		}
+
+		eventName, err := cmd.Flags().GetString("event-name")
+		if err != nil {
+			panic(err)
+		}
+
+		url := fmt.Sprintf("ws://%s%s/event_type/%s/%s/ws", strings.TrimRight(baseURL, "/"), basePath, sourceID, eventName)
+		fmt.Printf("subscribed to %s\n", url)
 
 		ws, err := websocket.Dial(url, "", origin)
 		if err != nil {
 			log.Fatal(err)
 		}
 
+		buffer_size, err := cmd.Flags().GetUint("message-buffer-size")
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		for {
-			msg := make([]byte, 512)
+			msg := make([]byte, buffer_size)
 			var n int
 			if n, err = ws.Read(msg); err != nil {
 				log.Fatal(err)
@@ -38,8 +61,12 @@ var subscribeCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(subscribeCmd)
 
-	subscribeCmd.Flags().StringP("url", "u", "", "websocket URL")
 	subscribeCmd.Flags().UintP("message-buffer-size", "m", 1024, "message buffer size in bytes")
+	subscribeCmd.Flags().StringP("source-id", "s", "", "source id")
+	subscribeCmd.Flags().StringP("event-name", "n", "", "event name")
+
+	subscribeCmd.MarkFlagRequired("source-id")
+	subscribeCmd.MarkFlagRequired("event-name")
 
 	// Here you will define your flags and configuration settings.
 

@@ -24,7 +24,9 @@ var eventTypesCmd = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
-		client, err := codegen.NewClientWithResponses(strings.TrimRight(baseURL, "/") + basePath)
+
+		url := fmt.Sprintf("http://%s/%s", strings.TrimRight(baseURL, "/"), basePath)
+		client, err := codegen.NewClientWithResponses(url)
 		if err != nil {
 			fmt.Println(err)
 			return

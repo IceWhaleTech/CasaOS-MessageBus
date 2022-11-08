@@ -45,5 +45,5 @@ func init() {
 	// will be global for your application.
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.message-bus-tool.yaml)")
-	rootCmd.PersistentFlags().StringP("base-url", "u", "http://localhost:80", "base url of CasaOS")
+	rootCmd.PersistentFlags().StringP("base-url", "u", "localhost:80", "base url of CasaOS")
 }
