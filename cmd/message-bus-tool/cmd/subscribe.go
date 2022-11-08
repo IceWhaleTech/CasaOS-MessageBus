@@ -34,10 +34,10 @@ var subscribeCmd = &cobra.Command{
 			panic(err)
 		}
 
-		url := fmt.Sprintf("ws://%s%s/event_type/%s/%s/ws", strings.TrimRight(baseURL, "/"), basePath, sourceID, eventName)
-		fmt.Printf("subscribed to %s\n", url)
+		wsURL := fmt.Sprintf("ws://%s%s/event_type/%s/%s/ws", strings.TrimRight(baseURL, "/"), basePath, sourceID, eventName)
+		fmt.Printf("subscribed to %s\n", wsURL)
 
-		ws, err := websocket.Dial(url, "", origin)
+		ws, err := websocket.Dial(wsURL, "", origin)
 		if err != nil {
 			log.Fatal(err)
 		}
