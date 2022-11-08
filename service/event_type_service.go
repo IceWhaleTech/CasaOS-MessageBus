@@ -5,8 +5,11 @@ import (
 	"errors"
 	"time"
 
+	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
+	"github.com/IceWhaleTech/CasaOS-MessageBus/common"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/repository"
+	"go.uber.org/zap"
 )
 
 type EventTypeService struct {
@@ -108,6 +111,7 @@ func (s *EventTypeService) Unsubscribe(sourceID string, name string, c chan mode
 
 	for i, subscriber := range s.subscriberChannels[sourceID][name] {
 		if subscriber == c {
+			logger.Info("unsubscribing from event type", zap.String("sourceID", sourceID), zap.String("name", name), zap.Int("subscriber", i))
 			s.subscriberChannels[sourceID][name] = append(s.subscriberChannels[sourceID][name][:i], s.subscriberChannels[sourceID][name][i+1:]...)
 			close(c)
 			return nil
@@ -145,6 +149,9 @@ func (s *EventTypeService) Start(ctx *context.Context) {
 		s.stop = nil
 	}()
 
+	ticker := time.NewTicker(10 * time.Second)
+	defer ticker.Stop()
+
 	for {
 		select {
 
@@ -175,6 +182,30 @@ func (s *EventTypeService) Start(ctx *context.Context) {
 					return
 				default: // drop event if no one is listening
 					continue
+				}
+			}
+		case <-ticker.C:
+			if s.subscriberChannels == nil {
+				continue
+			}
+
+			heartbeatEvent := model.Event{
+				SourceID:  common.MessageBusSourceID,
+				Name:      common.MessageBusHeartbeatEventName,
+				Timestamp: time.Now().Unix(),
+			}
+
+			for _, source := range s.subscriberChannels {
+				for _, subscribers := range source {
+					for _, subscriber := range subscribers {
+						select {
+						case subscriber <- heartbeatEvent:
+						case <-(*s.ctx).Done():
+							return
+						default: // drop event if no one is listening
+							continue
+						}
+					}
 				}
 			}
 		}

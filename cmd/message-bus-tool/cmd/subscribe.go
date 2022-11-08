@@ -41,6 +41,7 @@ var subscribeCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
+		defer ws.Close()
 
 		bufferSize, err := cmd.Flags().GetUint(FlagMessageBufferSize)
 		if err != nil {

@@ -43,13 +43,12 @@ var (
 func main() {
 	// arguments
 	configFlag := flag.String("c", "", "config file path")
-	dbFlag := flag.String("d", "", "db path")
 	versionFlag := flag.Bool("v", false, "version")
 
 	flag.Parse()
 
 	if *versionFlag {
-		fmt.Printf("v%s\n", common.Version)
+		fmt.Printf("v%s\n", common.MessageBusVersion)
 		os.Exit(0)
 	}
 
@@ -59,15 +58,11 @@ func main() {
 	logger.LogInit(config.AppInfo.LogPath, config.AppInfo.LogSaveName, config.AppInfo.LogFileExt)
 
 	// repository
-	if len(*dbFlag) == 0 {
-		*dbFlag = config.AppInfo.DBPath
-	}
-
-	if err := file.IsNotExistMkDir(*dbFlag); err != nil {
+	if err := file.IsNotExistMkDir(config.CommonInfo.RuntimePath); err != nil {
 		panic(err)
 	}
 
-	databaseFilePath := filepath.Join(*dbFlag, "message-bus.db")
+	databaseFilePath := filepath.Join(config.CommonInfo.RuntimePath, "message-bus.db")
 
 	repository, err := repository.NewDatabaseRepository(databaseFilePath)
 	if err != nil {

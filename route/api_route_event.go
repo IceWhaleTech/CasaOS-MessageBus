@@ -9,6 +9,7 @@ import (
 
 	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/codegen"
+	"github.com/IceWhaleTech/CasaOS-MessageBus/common"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/route/adapter/in"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/route/adapter/out"
@@ -126,6 +127,14 @@ func (r *APIRoute) SubscribeEvent(c echo.Context, sourceID codegen.SourceId, nam
 				return
 			}
 
+			if event.SourceID == common.MessageBusSourceID && event.Name == common.MessageBusHeartbeatEventName {
+				if err := wsutil.WriteServerMessage(conn, ws.OpPing, []byte{}); err != nil {
+					logger.Error("error when trying to send ping message", zap.Error(err))
+					return
+				}
+				continue
+			}
+
 			message, err := json.Marshal(out.EventAdapter(event))
 			if err != nil {
 				logger.Error("failed to marshal event", zap.Error(err))
@@ -134,7 +143,7 @@ func (r *APIRoute) SubscribeEvent(c echo.Context, sourceID codegen.SourceId, nam
 
 			logger.Info("sending", zap.String("remote_addr", conn.RemoteAddr().String()), zap.String("message", string(message)))
 
-			if err := wsutil.WriteServerMessage(conn, ws.OpText, message); err != nil {
+			if err := wsutil.WriteServerBinary(conn, message); err != nil {
 				if _, ok := err.(*net.OpError); ok {
 					logger.Info("ended", zap.String("error", err.Error()))
 				} else {

@@ -32,7 +32,7 @@ func main() {
 	flag.Parse()
 
 	if *versionFlag {
-		fmt.Printf("v%s\n", common.Version)
+		fmt.Printf("v%s\n", common.MessageBusVersion)
 		os.Exit(0)
 	}
 
