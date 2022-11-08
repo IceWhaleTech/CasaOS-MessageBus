@@ -14,7 +14,6 @@ var (
 	}
 
 	AppInfo = &model.APPModel{
-		DBPath:      "/var/lib/casaos",
 		LogPath:     "/var/log/casaos",
 		LogSaveName: common.ServiceName,
 		LogFileExt:  "log",

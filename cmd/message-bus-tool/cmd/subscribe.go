@@ -19,17 +19,17 @@ var subscribeCmd = &cobra.Command{
 	Use:   "subscribe",
 	Short: "subscribe to a websocket URL",
 	Run: func(cmd *cobra.Command, args []string) {
-		baseURL, err := rootCmd.PersistentFlags().GetString("base-url")
+		baseURL, err := rootCmd.PersistentFlags().GetString(FlagBaseURL)
 		if err != nil {
 			panic(err)
 		}
 
-		sourceID, err := cmd.Flags().GetString("source-id")
+		sourceID, err := cmd.Flags().GetString(FlagSourceID)
 		if err != nil {
 			panic(err)
 		}
 
-		eventName, err := cmd.Flags().GetString("event-name")
+		eventName, err := cmd.Flags().GetString(FlagEventName)
 		if err != nil {
 			panic(err)
 		}
@@ -42,13 +42,13 @@ var subscribeCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		buffer_size, err := cmd.Flags().GetUint("message-buffer-size")
+		bufferSize, err := cmd.Flags().GetUint(FlagMessageBufferSize)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		for {
-			msg := make([]byte, buffer_size)
+			msg := make([]byte, bufferSize)
 			var n int
 			if n, err = ws.Read(msg); err != nil {
 				log.Fatal(err)
@@ -61,12 +61,17 @@ var subscribeCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(subscribeCmd)
 
-	subscribeCmd.Flags().UintP("message-buffer-size", "m", 1024, "message buffer size in bytes")
-	subscribeCmd.Flags().StringP("source-id", "s", "", "source id")
-	subscribeCmd.Flags().StringP("event-name", "n", "", "event name")
+	subscribeCmd.Flags().UintP(FlagMessageBufferSize, "m", 1024, "message buffer size in bytes")
+	subscribeCmd.Flags().StringP(FlagSourceID, "s", "", "source id")
+	subscribeCmd.Flags().StringP(FlagEventName, "n", "", "event name")
 
-	subscribeCmd.MarkFlagRequired("source-id")
-	subscribeCmd.MarkFlagRequired("event-name")
+	if err := subscribeCmd.MarkFlagRequired(FlagSourceID); err != nil {
+		panic(err)
+	}
+
+	if err := subscribeCmd.MarkFlagRequired(FlagEventName); err != nil {
+		panic(err)
+	}
 
 	// Here you will define your flags and configuration settings.
 

@@ -20,7 +20,7 @@ var eventTypesCmd = &cobra.Command{
 	Use:   "event-types",
 	Short: "list event types",
 	Run: func(cmd *cobra.Command, args []string) {
-		baseURL, err := rootCmd.PersistentFlags().GetString("base-url")
+		baseURL, err := rootCmd.PersistentFlags().GetString(FlagBaseURL)
 		if err != nil {
 			panic(err)
 		}

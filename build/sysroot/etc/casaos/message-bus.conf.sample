@@ -5,4 +5,3 @@ RuntimePath=/var/run/casaos
 LogPath=/var/log/casaos
 LogSaveName=message-bus
 LogFileExt=log
-DBPath=/var/lib/casaos/db
