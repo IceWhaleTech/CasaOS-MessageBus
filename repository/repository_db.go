@@ -6,6 +6,7 @@ import (
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type DatabaseRepository struct {
@@ -23,7 +24,8 @@ func (r *DatabaseRepository) GetEventTypes() ([]model.EventType, error) {
 }
 
 func (r *DatabaseRepository) RegisterEventType(eventType model.EventType) (*model.EventType, error) {
-	if err := r.db.Create(&eventType).Error; err != nil {
+	// upsert
+	if err := r.db.Clauses(clause.OnConflict{UpdateAll: true}).Create(&eventType).Error; err != nil {
 		return nil, err
 	}
 
