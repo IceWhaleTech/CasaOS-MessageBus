@@ -29,12 +29,18 @@ var subscribeCmd = &cobra.Command{
 			panic(err)
 		}
 
-		eventName, err := cmd.Flags().GetString(FlagEventName)
+		eventNames, err := cmd.Flags().GetString(FlagEventNames)
 		if err != nil {
 			panic(err)
 		}
 
-		wsURL := fmt.Sprintf("ws://%s%s/event_type/%s/%s/ws", strings.TrimRight(baseURL, "/"), basePath, sourceID, eventName)
+		var wsURL string
+
+		if eventNames == "" {
+			wsURL = fmt.Sprintf("ws://%s%s/event/%s", strings.TrimRight(baseURL, "/"), basePath, sourceID)
+		} else {
+			wsURL = fmt.Sprintf("ws://%s%s/event/%s?names=%s", strings.TrimRight(baseURL, "/"), basePath, sourceID, eventNames)
+		}
 		fmt.Printf("subscribed to %s\n", wsURL)
 
 		ws, err := websocket.Dial(wsURL, "", origin)
@@ -64,13 +70,9 @@ func init() {
 
 	subscribeCmd.Flags().UintP(FlagMessageBufferSize, "m", 1024, "message buffer size in bytes")
 	subscribeCmd.Flags().StringP(FlagSourceID, "s", "", "source id")
-	subscribeCmd.Flags().StringP(FlagEventName, "n", "", "event name")
+	subscribeCmd.Flags().StringP(FlagEventNames, "n", "", "event names (comma separated)")
 
 	if err := subscribeCmd.MarkFlagRequired(FlagSourceID); err != nil {
-		panic(err)
-	}
-
-	if err := subscribeCmd.MarkFlagRequired(FlagEventName); err != nil {
 		panic(err)
 	}
 

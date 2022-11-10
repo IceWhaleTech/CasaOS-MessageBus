@@ -69,6 +69,17 @@ func (s *EventTypeService) Publish(event model.Event) (*model.Event, error) {
 }
 
 func (s *EventTypeService) Subscribe(sourceID string, names []string) (chan model.Event, error) {
+	if len(names) == 0 {
+		eventTypes, err := s.GetEventTypesBySourceID(sourceID)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, eventType := range eventTypes {
+			names = append(names, eventType.Name)
+		}
+	}
+
 	for _, name := range names {
 		eventType, err := s.GetEventType(sourceID, name)
 		if err != nil {
@@ -136,7 +147,14 @@ func (s *EventTypeService) Start(ctx *context.Context) {
 			for sourceID, source := range s.subscriberChannels {
 				for eventName, subscribers := range source {
 					for _, subscriber := range subscribers {
-						close(subscriber)
+						select {
+						case _, ok := <-subscriber:
+							if ok {
+								close(subscriber)
+							}
+						default:
+							continue
+						}
 					}
 					delete(s.subscriberChannels[sourceID], eventName)
 				}
