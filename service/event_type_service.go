@@ -68,14 +68,27 @@ func (s *EventTypeService) Publish(event model.Event) (*model.Event, error) {
 	return &event, nil
 }
 
-func (s *EventTypeService) Subscribe(sourceID string, name string) (chan model.Event, error) {
-	eventType, err := s.GetEventType(sourceID, name)
-	if err != nil {
-		return nil, err
+func (s *EventTypeService) Subscribe(sourceID string, names []string) (chan model.Event, error) {
+	if len(names) == 0 {
+		eventTypes, err := s.GetEventTypesBySourceID(sourceID)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, eventType := range eventTypes {
+			names = append(names, eventType.Name)
+		}
 	}
 
-	if eventType == nil {
-		return nil, ErrEventNameNotFound
+	for _, name := range names {
+		eventType, err := s.GetEventType(sourceID, name)
+		if err != nil {
+			return nil, err
+		}
+
+		if eventType == nil {
+			return nil, ErrEventNameNotFound
+		}
 	}
 
 	if s.subscriberChannels == nil {
@@ -86,12 +99,14 @@ func (s *EventTypeService) Subscribe(sourceID string, name string) (chan model.E
 		s.subscriberChannels[sourceID] = make(map[string][]chan model.Event)
 	}
 
-	if s.subscriberChannels[sourceID][name] == nil {
-		s.subscriberChannels[sourceID][name] = make([]chan model.Event, 0)
-	}
-
 	c := make(chan model.Event, 1)
-	s.subscriberChannels[sourceID][name] = append(s.subscriberChannels[sourceID][name], c)
+
+	for _, name := range names {
+		if s.subscriberChannels[sourceID][name] == nil {
+			s.subscriberChannels[sourceID][name] = make([]chan model.Event, 0)
+		}
+		s.subscriberChannels[sourceID][name] = append(s.subscriberChannels[sourceID][name], c)
+	}
 
 	return c, nil
 }
@@ -113,7 +128,6 @@ func (s *EventTypeService) Unsubscribe(sourceID string, name string, c chan mode
 		if subscriber == c {
 			logger.Info("unsubscribing from event type", zap.String("sourceID", sourceID), zap.String("name", name), zap.Int("subscriber", i))
 			s.subscriberChannels[sourceID][name] = append(s.subscriberChannels[sourceID][name][:i], s.subscriberChannels[sourceID][name][i+1:]...)
-			close(c)
 			return nil
 		}
 	}
@@ -133,7 +147,14 @@ func (s *EventTypeService) Start(ctx *context.Context) {
 			for sourceID, source := range s.subscriberChannels {
 				for eventName, subscribers := range source {
 					for _, subscriber := range subscribers {
-						close(subscriber)
+						select {
+						case _, ok := <-subscriber:
+							if ok {
+								close(subscriber)
+							}
+						default:
+							continue
+						}
 					}
 					delete(s.subscriberChannels[sourceID], eventName)
 				}

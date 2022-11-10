@@ -2,7 +2,7 @@ package cmd
 
 const (
 	FlagSourceID          = "source-id"
-	FlagEventName         = "event-name"
+	FlagEventNames        = "event-name"
 	FlagMessageBufferSize = "message-buffer-size"
 	FlagBaseURL           = "base-url"
 )

@@ -45,7 +45,9 @@ tags:
 x-tagGroups:
   - name: Methods
     tags:
+      - EventType methods
       - Event methods
+      - ActionType methods
       - Action methods
 
   - name: Schemas
@@ -66,7 +68,7 @@ paths:
         List all event types that are currently registered with the message bus.
       operationId: getEventTypes
       tags:
-        - Event methods
+        - EventType methods
       responses:
         "200":
           $ref: "#/components/responses/GetEventTypesOK"
@@ -79,7 +81,7 @@ paths:
         Register a new event type with the message bus.
       operationId: RegisterEventType
       tags:
-        - Event methods
+        - EventType methods
       requestBody:
         $ref: "#/components/requestBodies/RegisterEventType"
       responses:
@@ -97,9 +99,9 @@ paths:
         Get all event types that are registered with the message bus for a specific source ID.
       operationId: getEventTypesBySourceID
       tags:
-        - Event methods
+        - EventType methods
       parameters:
-        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/SourceID"
       responses:
         "200":
           $ref: "#/components/responses/GetEventTypesOK"
@@ -113,16 +115,17 @@ paths:
         Get an event type that is registered with the message bus for a specific source ID and event name.
       operationId: getEventType
       tags:
-        - Event methods
+        - EventType methods
       parameters:
-        - $ref: "#/components/parameters/SourceId"
-        - $ref: "#/components/parameters/Name"
+        - $ref: "#/components/parameters/SourceID"
+        - $ref: "#/components/parameters/EventName"
       responses:
         "200":
           $ref: "#/components/responses/GetEventTypeOK"
         "404":
           $ref: "#/components/responses/ResponseNotFound"
 
+  /event/{source_id}/{name}:
     post:
       summary: Publish an event
       description: |
@@ -131,8 +134,8 @@ paths:
       tags:
         - Event methods
       parameters:
-        - $ref: "#/components/parameters/SourceId"
-        - $ref: "#/components/parameters/Name"
+        - $ref: "#/components/parameters/SourceID"
+        - $ref: "#/components/parameters/EventName"
       requestBody:
         $ref: "#/components/requestBodies/PublishEvent"
       responses:
@@ -143,7 +146,7 @@ paths:
         "404":
           $ref: "#/components/responses/ResponseNotFound"
 
-  /event_type/{source_id}/{name}/ws:
+  /event/{source_id}:
     get:
       summary: Subscribe to an event type (WebSocket)
       description: |
@@ -152,8 +155,8 @@ paths:
       tags:
         - Event methods
       parameters:
-        - $ref: "#/components/parameters/SourceId"
-        - $ref: "#/components/parameters/Name"
+        - $ref: "#/components/parameters/SourceID"
+        - $ref: "#/components/parameters/EventNames"
       responses:
         "101":
           description: |
@@ -161,13 +164,23 @@ paths:
 
   /action_type:
     get:
+      summary: List action types
+      description: |
+        List all action types that are currently registered with the message bus.
       operationId: getActionTypes
+      tags:
+        - ActionType methods
       responses:
         "200":
           $ref: "#/components/responses/GetActionTypesOK"
 
     post:
+      summary: Register an action type
+      description: |
+        Register a new action type with the message bus.
       operationId: RegisterActionType
+      tags:
+        - ActionType methods
       requestBody:
         $ref: "#/components/requestBodies/RegisterActionType"
       responses:
@@ -180,9 +193,14 @@ paths:
 
   /action_type/{source_id}:
     get:
+      summary: Get action types by source ID
+      description: |
+        Get all action types that are registered with the message bus for a specific source ID.
       operationId: getActionTypesBySourceID
+      tags:
+        - ActionType methods
       parameters:
-        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/SourceID"
       responses:
         "200":
           $ref: "#/components/responses/GetActionTypesOK"
@@ -191,21 +209,32 @@ paths:
 
   /action_type/{source_id}/{name}:
     get:
+      summary: Get an action type by source ID and name
+      description: |
+        Get an action type that is registered with the message bus for a specific source ID and action name.
       operationId: getActionType
+      tags:
+        - ActionType methods
       parameters:
-        - $ref: "#/components/parameters/SourceId"
-        - $ref: "#/components/parameters/Name"
+        - $ref: "#/components/parameters/SourceID"
+        - $ref: "#/components/parameters/ActionName"
       responses:
         "200":
           $ref: "#/components/responses/GetActionTypeOK"
         "404":
           $ref: "#/components/responses/ResponseNotFound"
 
+  /action/{source_id}/{name}:
     post:
+      summary: Trigger an action
+      description: |
+        Trigger an action on the message bus.
       operationId: triggerAction
+      tags:
+        - Action methods
       parameters:
-        - $ref: "#/components/parameters/SourceId"
-        - $ref: "#/components/parameters/Name"
+        - $ref: "#/components/parameters/SourceID"
+        - $ref: "#/components/parameters/ActionName"
       requestBody:
         $ref: "#/components/requestBodies/TriggerAction"
       responses:
@@ -216,6 +245,22 @@ paths:
         "404":
           $ref: "#/components/responses/ResponseNotFound"
 
+  /action/{source_id}:
+    get:
+      summary: Subscribe to an action type (WebSocket)
+      description: |
+        Subscribe to an action type by source ID and name via WebSocket.
+      operationId: subscribeAction
+      tags:
+        - Action methods
+      parameters:
+        - $ref: "#/components/parameters/SourceID"
+        - $ref: "#/components/parameters/ActionNames"
+      responses:
+        "101":
+          description: |
+            The connection will be upgraded to a WebSocket connection and the client will receive actions as they are triggered.
+
 components:
 
   securitySchemes:
@@ -225,19 +270,51 @@ components:
       name: Authorization
 
   parameters:
-    SourceId:
+    SourceID:
       name: source_id
       in: path
       required: true
       schema:
         type: string
+        example: "local-storage"
 
-    Name:
+    EventName:
       name: name
       in: path
       required: true
       schema:
         type: string
+        example: "local-storage:disk:added"
+
+    EventNames:
+      name: names
+      in: query
+      allowEmptyValue: false
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+      example: "local-storage:disk:added,local-storage:disk:removed"
+    
+    ActionName:
+      name: name
+      in: path
+      required: true
+      schema:
+        type: string
+        example: "local-storage:partition:format"
+
+    ActionNames:
+      name: names
+      in: query
+      allowEmptyValue: false
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+      example: "local-storage:partition:format,local-storage:partition:mount"
 
   requestBodies:
     RegisterEventType:
