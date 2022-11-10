@@ -101,7 +101,7 @@ paths:
       tags:
         - EventType methods
       parameters:
-        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/SourceID"
       responses:
         "200":
           $ref: "#/components/responses/GetEventTypesOK"
@@ -117,7 +117,7 @@ paths:
       tags:
         - EventType methods
       parameters:
-        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/SourceID"
         - $ref: "#/components/parameters/EventName"
       responses:
         "200":
@@ -134,7 +134,7 @@ paths:
       tags:
         - Event methods
       parameters:
-        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/SourceID"
         - $ref: "#/components/parameters/EventName"
       requestBody:
         $ref: "#/components/requestBodies/PublishEvent"
@@ -155,7 +155,7 @@ paths:
       tags:
         - Event methods
       parameters:
-        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/SourceID"
         - $ref: "#/components/parameters/EventNames"
       responses:
         "101":
@@ -200,7 +200,7 @@ paths:
       tags:
         - ActionType methods
       parameters:
-        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/SourceID"
       responses:
         "200":
           $ref: "#/components/responses/GetActionTypesOK"
@@ -216,7 +216,7 @@ paths:
       tags:
         - ActionType methods
       parameters:
-        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/SourceID"
         - $ref: "#/components/parameters/ActionName"
       responses:
         "200":
@@ -233,7 +233,7 @@ paths:
       tags:
         - Action methods
       parameters:
-        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/SourceID"
         - $ref: "#/components/parameters/ActionName"
       requestBody:
         $ref: "#/components/requestBodies/TriggerAction"
@@ -254,7 +254,7 @@ paths:
       tags:
         - Action methods
       parameters:
-        - $ref: "#/components/parameters/SourceId"
+        - $ref: "#/components/parameters/SourceID"
         - $ref: "#/components/parameters/ActionNames"
       responses:
         "101":
@@ -270,7 +270,7 @@ components:
       name: Authorization
 
   parameters:
-    SourceId:
+    SourceID:
       name: source_id
       in: path
       required: true

@@ -56,7 +56,7 @@ func TestEventTypeService(t *testing.T) {
 	assert.Equal(t, eventType.Name, name)
 
 	// subscribe event type
-	channel, err := service.Subscribe(sourceID, name)
+	channel, err := service.Subscribe(sourceID, []string{name})
 	assert.NilError(t, err)
 
 	outputChannel := make(chan model.Event)
