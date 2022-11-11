@@ -12,8 +12,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// eventTypesCmd represents the eventTypes command
-var eventTypesCmd = &cobra.Command{
+// listEventTypesCmd represents the eventTypes command
+var listEventTypesCmd = &cobra.Command{
 	Use:   "event-types",
 	Short: "list event types",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -52,11 +52,11 @@ var eventTypesCmd = &cobra.Command{
 
 		for _, eventType := range *response.JSON200 {
 			propertyTypes := make([]string, 0)
-			for _, propertyType := range *eventType.PropertyTypeList {
+			for _, propertyType := range eventType.PropertyTypeList {
 				propertyTypes = append(propertyTypes, *propertyType.Name)
 			}
 
-			fmt.Fprintf(w, "%s\t%s\t%s\n", *eventType.SourceID, *eventType.Name, strings.Join(propertyTypes, ","))
+			fmt.Fprintf(w, "%s\t%s\t%s\n", eventType.SourceID, eventType.Name, strings.Join(propertyTypes, ","))
 		}
 
 		w.Flush()
@@ -64,7 +64,7 @@ var eventTypesCmd = &cobra.Command{
 }
 
 func init() {
-	listCmd.AddCommand(eventTypesCmd)
+	listCmd.AddCommand(listEventTypesCmd)
 
 	// Here you will define your flags and configuration settings.
 

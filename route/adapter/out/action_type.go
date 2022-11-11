@@ -12,8 +12,8 @@ func ActionTypeAdapter(actionType model.ActionType) codegen.ActionType {
 	}
 
 	return codegen.ActionType{
-		SourceID:         &actionType.SourceID,
-		Name:             &actionType.Name,
-		PropertyTypeList: &propertyTypeList,
+		SourceID:         actionType.SourceID,
+		Name:             actionType.Name,
+		PropertyTypeList: propertyTypeList,
 	}
 }

@@ -467,6 +467,10 @@ components:
 
     EventType:
       type: object
+      required:
+        - "sourceID"
+        - "name"
+        - "propertyTypeList"
       properties:
         sourceID:
           type: string
@@ -515,6 +519,10 @@ components:
 
     ActionType:
       type: object
+      required:
+        - "sourceID"
+        - "name"
+        - "propertyTypeList"
       properties:
         sourceID:
           type: string

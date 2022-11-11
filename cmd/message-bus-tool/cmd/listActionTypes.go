@@ -12,8 +12,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// actionTypesCmd represents the actionTypes command
-var actionTypesCmd = &cobra.Command{
+// listActionTypesCmd represents the actionTypes command
+var listActionTypesCmd = &cobra.Command{
 	Use:   "action-types",
 	Short: "list action types",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -22,7 +22,7 @@ var actionTypesCmd = &cobra.Command{
 			panic(err)
 		}
 
-		url := fmt.Sprintf("http://%s/%s", strings.TrimRight(baseURL, "/"), basePath)
+		url := fmt.Sprintf("http://%s%s", strings.TrimRight(baseURL, "/"), basePath)
 		client, err := codegen.NewClientWithResponses(url)
 		if err != nil {
 			fmt.Println(err)
@@ -52,11 +52,11 @@ var actionTypesCmd = &cobra.Command{
 
 		for _, actionType := range *response.JSON200 {
 			propertyTypes := make([]string, 0)
-			for _, propertyType := range *actionType.PropertyTypeList {
+			for _, propertyType := range actionType.PropertyTypeList {
 				propertyTypes = append(propertyTypes, *propertyType.Name)
 			}
 
-			fmt.Fprintf(w, "%s\t%s\t%s\n", *actionType.SourceID, *actionType.Name, strings.Join(propertyTypes, ","))
+			fmt.Fprintf(w, "%s\t%s\t%s\n", actionType.SourceID, actionType.Name, strings.Join(propertyTypes, ","))
 		}
 
 		w.Flush()
@@ -64,7 +64,7 @@ var actionTypesCmd = &cobra.Command{
 }
 
 func init() {
-	listCmd.AddCommand(actionTypesCmd)
+	listCmd.AddCommand(listActionTypesCmd)
 
 	// Here you will define your flags and configuration settings.
 

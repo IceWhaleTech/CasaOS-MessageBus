@@ -48,7 +48,7 @@ func (r *APIRoute) RegisterEventType(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
 	}
 
-	return ctx.JSON(http.StatusOK, result)
+	return ctx.JSON(http.StatusCreated, result)
 }
 
 func (r *APIRoute) GetEventTypesBySourceID(ctx echo.Context, sourceID codegen.SourceID) error {
