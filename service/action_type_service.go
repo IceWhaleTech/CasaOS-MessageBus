@@ -5,57 +5,55 @@ import (
 	"errors"
 	"time"
 
-	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/common"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/repository"
-	"go.uber.org/zap"
 )
 
-type EventService struct {
+type ActionService struct {
 	ctx                *context.Context
 	repository         *repository.Repository
-	inboundChannel     chan model.Event
-	subscriberChannels map[string]map[string][]chan model.Event
+	inboundChannel     chan model.Action
+	subscriberChannels map[string]map[string][]chan model.Action
 	stop               chan struct{}
 }
 
 var (
-	ErrEventSourceIDNotFound = errors.New("event source id not found")
-	ErrEventNameNotFound     = errors.New("event name not found")
+	ErrActionSourceIDNotFound = errors.New("event source id not found")
+	ErrActionNameNotFound     = errors.New("event name not found")
 )
 
-func (s *EventService) GetEventTypes() ([]model.EventType, error) {
-	return (*s.repository).GetEventTypes()
+func (s *ActionService) GetActionTypes() ([]model.ActionType, error) {
+	return (*s.repository).GetActionTypes()
 }
 
-func (s *EventService) RegisterEventType(eventType model.EventType) (*model.EventType, error) {
+func (s *ActionService) RegisterActionType(actionType model.ActionType) (*model.ActionType, error) {
 	// TODO - ensure sourceID and name are URL safe
 
-	return (*s.repository).RegisterEventType(eventType)
+	return (*s.repository).RegisterActionType(actionType)
 }
 
-func (s *EventService) GetEventTypesBySourceID(sourceID string) ([]model.EventType, error) {
-	return (*s.repository).GetEventTypesBySourceID(sourceID)
+func (s *ActionService) GetActionTypesBySourceID(sourceID string) ([]model.ActionType, error) {
+	return (*s.repository).GetActionTypesBySourceID(sourceID)
 }
 
-func (s *EventService) GetEventType(sourceID string, name string) (*model.EventType, error) {
-	return (*s.repository).GetEventType(sourceID, name)
+func (s *ActionService) GetActionType(sourceID string, name string) (*model.ActionType, error) {
+	return (*s.repository).GetActionType(sourceID, name)
 }
 
-func (s *EventService) Publish(event model.Event) (*model.Event, error) {
+func (s *ActionService) Trigger(action model.Action) (*model.Action, error) {
 	if s.inboundChannel == nil {
 		return nil, ErrInboundChannelNotFound
 	}
 
-	if event.Timestamp == 0 {
-		event.Timestamp = time.Now().Unix()
+	if action.Timestamp == 0 {
+		action.Timestamp = time.Now().Unix()
 	}
 
 	// TODO - ensure properties are valid for event type
 
 	select {
-	case s.inboundChannel <- event:
+	case s.inboundChannel <- action:
 
 	case <-(*s.ctx).Done():
 		return nil, (*s.ctx).Err()
@@ -63,45 +61,45 @@ func (s *EventService) Publish(event model.Event) (*model.Event, error) {
 	default: // drop event if no one is listening
 	}
 
-	return &event, nil
+	return &action, nil
 }
 
-func (s *EventService) Subscribe(sourceID string, names []string) (chan model.Event, error) {
+func (s *ActionService) Subscribe(sourceID string, names []string) (chan model.Action, error) {
 	if len(names) == 0 {
-		eventTypes, err := s.GetEventTypesBySourceID(sourceID)
+		actionTypes, err := s.GetActionTypesBySourceID(sourceID)
 		if err != nil {
 			return nil, err
 		}
 
-		for _, eventType := range eventTypes {
-			names = append(names, eventType.Name)
+		for _, actionType := range actionTypes {
+			names = append(names, actionType.Name)
 		}
 	}
 
 	for _, name := range names {
-		eventType, err := s.GetEventType(sourceID, name)
+		actionType, err := s.GetActionType(sourceID, name)
 		if err != nil {
 			return nil, err
 		}
 
-		if eventType == nil {
-			return nil, ErrEventNameNotFound
+		if actionType == nil {
+			return nil, ErrActionNameNotFound
 		}
 	}
 
 	if s.subscriberChannels == nil {
-		s.subscriberChannels = make(map[string]map[string][]chan model.Event)
+		s.subscriberChannels = make(map[string]map[string][]chan model.Action)
 	}
 
 	if s.subscriberChannels[sourceID] == nil {
-		s.subscriberChannels[sourceID] = make(map[string][]chan model.Event)
+		s.subscriberChannels[sourceID] = make(map[string][]chan model.Action)
 	}
 
-	c := make(chan model.Event, 1)
+	c := make(chan model.Action, 1)
 
 	for _, name := range names {
 		if s.subscriberChannels[sourceID][name] == nil {
-			s.subscriberChannels[sourceID][name] = make([]chan model.Event, 0)
+			s.subscriberChannels[sourceID][name] = make([]chan model.Action, 0)
 		}
 		s.subscriberChannels[sourceID][name] = append(s.subscriberChannels[sourceID][name], c)
 	}
@@ -109,22 +107,21 @@ func (s *EventService) Subscribe(sourceID string, names []string) (chan model.Ev
 	return c, nil
 }
 
-func (s *EventService) Unsubscribe(sourceID string, name string, c chan model.Event) error {
+func (s *ActionService) Unsubscribe(sourceID string, name string, c chan model.Action) error {
 	if s.subscriberChannels == nil {
 		return ErrSubscriberChannelsNotFound
 	}
 
 	if s.subscriberChannels[sourceID] == nil {
-		return ErrEventSourceIDNotFound
+		return ErrActionSourceIDNotFound
 	}
 
 	if s.subscriberChannels[sourceID][name] == nil {
-		return ErrEventNameNotFound
+		return ErrActionNameNotFound
 	}
 
 	for i, subscriber := range s.subscriberChannels[sourceID][name] {
 		if subscriber == c {
-			logger.Info("unsubscribing from event type", zap.String("sourceID", sourceID), zap.String("name", name), zap.Int("subscriber", i))
 			s.subscriberChannels[sourceID][name] = append(s.subscriberChannels[sourceID][name][:i], s.subscriberChannels[sourceID][name][i+1:]...)
 			return nil
 		}
@@ -133,17 +130,17 @@ func (s *EventService) Unsubscribe(sourceID string, name string, c chan model.Ev
 	return nil
 }
 
-func (s *EventService) Start(ctx *context.Context) {
+func (s *ActionService) Start(ctx *context.Context) {
 	s.ctx = ctx
 
-	s.inboundChannel = make(chan model.Event)
-	s.subscriberChannels = make(map[string]map[string][]chan model.Event)
+	s.inboundChannel = make(chan model.Action)
+	s.subscriberChannels = make(map[string]map[string][]chan model.Action)
 	s.stop = make(chan struct{})
 
 	defer func() {
 		if s.subscriberChannels != nil {
 			for sourceID, source := range s.subscriberChannels {
-				for eventName, subscribers := range source {
+				for actionName, subscribers := range source {
 					for _, subscriber := range subscribers {
 						select {
 						case _, ok := <-subscriber:
@@ -154,7 +151,7 @@ func (s *EventService) Start(ctx *context.Context) {
 							continue
 						}
 					}
-					delete(s.subscriberChannels[sourceID], eventName)
+					delete(s.subscriberChannels[sourceID], actionName)
 				}
 				delete(s.subscriberChannels, sourceID)
 			}
@@ -177,7 +174,7 @@ func (s *EventService) Start(ctx *context.Context) {
 		case <-(*s.ctx).Done():
 			return
 
-		case event, ok := <-s.inboundChannel:
+		case action, ok := <-s.inboundChannel:
 			if !ok {
 				return
 			}
@@ -186,17 +183,17 @@ func (s *EventService) Start(ctx *context.Context) {
 				continue
 			}
 
-			if s.subscriberChannels[event.SourceID] == nil {
+			if s.subscriberChannels[action.SourceID] == nil {
 				continue
 			}
 
-			if s.subscriberChannels[event.SourceID][event.Name] == nil {
+			if s.subscriberChannels[action.SourceID][action.Name] == nil {
 				continue
 			}
 
-			for _, c := range s.subscriberChannels[event.SourceID][event.Name] {
+			for _, c := range s.subscriberChannels[action.SourceID][action.Name] {
 				select {
-				case c <- event:
+				case c <- action:
 				case <-(*s.ctx).Done():
 					return
 				default: // drop event if no one is listening
@@ -209,7 +206,7 @@ func (s *EventService) Start(ctx *context.Context) {
 				continue
 			}
 
-			heartbeat := model.Event{
+			heartbeat := model.Action{
 				SourceID:  common.MessageBusSourceID,
 				Name:      common.MessageBusHeartbeatName,
 				Timestamp: time.Now().Unix(),
@@ -232,8 +229,8 @@ func (s *EventService) Start(ctx *context.Context) {
 	}
 }
 
-func NewEventService(repository *repository.Repository) *EventService {
-	return &EventService{
+func NewActionService(repository *repository.Repository) *ActionService {
+	return &ActionService{
 		repository: repository,
 	}
 }

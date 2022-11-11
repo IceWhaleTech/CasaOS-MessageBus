@@ -8,16 +8,16 @@ import (
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 )
 
-func EventAdapter(event model.Event) codegen.Event {
+func ActionAdapter(action model.Action) codegen.Action {
 	properties := make([]codegen.Property, 0)
-	for _, property := range event.Properties {
+	for _, property := range action.Properties {
 		properties = append(properties, PropertyAdapter(property))
 	}
 
-	return codegen.Event{
-		SourceID:   &event.SourceID,
-		Name:       &event.Name,
+	return codegen.Action{
+		SourceID:   &action.SourceID,
+		Name:       &action.Name,
 		Properties: &properties,
-		Timestamp:  utils.Ptr(time.Unix(event.Timestamp, 0)),
+		Timestamp:  utils.Ptr(time.Unix(action.Timestamp, 0)),
 	}
 }
