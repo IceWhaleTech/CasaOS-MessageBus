@@ -6,7 +6,6 @@ require (
 	github.com/IceWhaleTech/CasaOS-Common v0.3.8-alpha1
 	github.com/gobwas/ws v1.1.0
 	github.com/json-iterator/go v1.1.12
-	github.com/spf13/cobra v1.6.1
 	go.uber.org/goleak v1.1.11
 	gorm.io/driver/sqlite v1.4.3
 	gorm.io/gorm v1.24.1
@@ -31,7 +30,6 @@ require (
 	github.com/golang/snappy v0.0.2 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
-	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/klauspost/compress v1.11.4 // indirect
@@ -45,7 +43,6 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.5 // indirect
 	github.com/pierrec/lz4/v4 v4.1.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	github.com/ulikunitz/xz v0.5.9 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
@@ -75,7 +72,7 @@ require (
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.1.0 // indirect
-	golang.org/x/net v0.1.0
+	golang.org/x/net v0.1.0 // indirect
 	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	gopkg.in/ini.v1 v1.67.0
