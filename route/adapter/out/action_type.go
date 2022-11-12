@@ -5,15 +5,15 @@ import (
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 )
 
-func EventTypeAdapter(eventType model.EventType) codegen.EventType {
+func ActionTypeAdapter(actionType model.ActionType) codegen.ActionType {
 	propertyTypeList := make([]codegen.PropertyType, 0)
-	for _, propertyType := range eventType.PropertyTypeList {
+	for _, propertyType := range actionType.PropertyTypeList {
 		propertyTypeList = append(propertyTypeList, PropertyTypeAdapter(propertyType))
 	}
 
-	return codegen.EventType{
-		SourceID:         eventType.SourceID,
-		Name:             eventType.Name,
+	return codegen.ActionType{
+		SourceID:         actionType.SourceID,
+		Name:             actionType.Name,
 		PropertyTypeList: propertyTypeList,
 	}
 }
