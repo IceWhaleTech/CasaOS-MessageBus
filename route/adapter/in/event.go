@@ -7,7 +7,7 @@ import (
 
 func EventAdapter(event codegen.Event) model.Event {
 	properties := make([]model.Property, 0)
-	for _, property := range *event.Properties {
+	for _, property := range event.Properties {
 		properties = append(properties, PropertyAdapter(property))
 	}
 
@@ -17,8 +17,8 @@ func EventAdapter(event codegen.Event) model.Event {
 	}
 
 	return model.Event{
-		SourceID:   *event.SourceID,
-		Name:       *event.Name,
+		SourceID:   event.SourceID,
+		Name:       event.Name,
 		Properties: properties,
 		Timestamp:  timestamp,
 	}

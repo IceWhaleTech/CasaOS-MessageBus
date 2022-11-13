@@ -93,9 +93,9 @@ func (r *APIRoute) PublishEvent(ctx echo.Context, sourceID codegen.SourceID, nam
 	}
 
 	event := codegen.Event{
-		SourceID:   &sourceID,
-		Name:       &name,
-		Properties: &properties,
+		SourceID:   sourceID,
+		Name:       name,
+		Properties: properties,
 		Timestamp:  utils.Ptr(time.Now()),
 	}
 

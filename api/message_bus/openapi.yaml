@@ -262,7 +262,6 @@ paths:
             The connection will be upgraded to a WebSocket connection and the client will receive actions as they are triggered.
 
 components:
-
   securitySchemes:
     access_token:
       type: apiKey
@@ -296,7 +295,7 @@ components:
         items:
           type: string
       example: "local-storage:disk:added,local-storage:disk:removed"
-    
+
     ActionName:
       name: name
       in: path
@@ -463,7 +462,7 @@ components:
         name:
           type: string
           description: property name
-          example: "local-storage:path"
+          example: "local-storage:vendor"
 
     EventType:
       type: object
@@ -487,6 +486,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/PropertyType"
+          example:
+            - "local-storage:vendor"
+            - "local-storage:model"
+            - "local-storage:uuid"
+            - "casaos-ui:type"
+            - "casaos-ui:title"
+            - "casaos-ui:icon-1"
+            - "casaos-ui:message-1"
 
     Property:
       type: object
@@ -494,24 +501,47 @@ components:
         name:
           type: string
           description: property name
+          example: "local-storage:vendor"
         value:
           type: string
           description: property value
+          example: "SanDisk"
 
     Event:
       type: object
+      required:
+        - "sourceID"
+        - "name"
+        - "properties"
       properties:
         sourceID:
           type: string
           description: associated source id
+          example: "local-storage"
         name:
           type: string
           description: event name
+          example: "local-storage:disk:added"
         properties:
           type: array
           description: event properties
           items:
             $ref: "#/components/schemas/Property"
+          example:
+            - name: local-storage:vendor
+              value: SanDisk
+            - name: local-storage:model
+              value: Cruzer
+            - name: local-storage:uuid
+              value: 442e0e5b-9d3e-4fe8-b46f-9c4141fdecd7
+            - name: casaos-ui:type
+              value: notification-style-2
+            - name: casaos-ui:title
+              value: "New disk found"
+            - name: casaos-ui:icon-1
+              value: casaos-icon-disk
+            - name: casaos-ui:message-1
+              value: "A new disk, SanDisk Cruzer, is added."
         timestamp:
           type: string
           description: timestamp this event took place
@@ -546,9 +576,11 @@ components:
         sourceID:
           type: string
           description: associated source id
+          example: "local-storage"
         name:
           type: string
           description: action name
+          example: "local-storage:disk:format"
         properties:
           type: array
           description: action properties

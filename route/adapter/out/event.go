@@ -15,9 +15,9 @@ func EventAdapter(event model.Event) codegen.Event {
 	}
 
 	return codegen.Event{
-		SourceID:   &event.SourceID,
-		Name:       &event.Name,
-		Properties: &properties,
+		SourceID:   event.SourceID,
+		Name:       event.Name,
+		Properties: properties,
 		Timestamp:  utils.Ptr(time.Unix(event.Timestamp, 0)),
 	}
 }
