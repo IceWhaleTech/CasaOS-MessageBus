@@ -458,6 +458,8 @@ components:
 
     PropertyType:
       type: object
+      required:
+        - "name"
       properties:
         name:
           type: string
@@ -497,6 +499,9 @@ components:
 
     Property:
       type: object
+      required:
+        - "name"
+        - "value"
       properties:
         name:
           type: string

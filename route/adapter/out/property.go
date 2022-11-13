@@ -7,7 +7,7 @@ import (
 
 func PropertyAdapter(property model.Property) codegen.Property {
 	return codegen.Property{
-		Name:  &property.Name,
-		Value: &property.Value,
+		Name:  property.Name,
+		Value: property.Value,
 	}
 }
