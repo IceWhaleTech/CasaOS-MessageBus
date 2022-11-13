@@ -7,6 +7,6 @@ import (
 
 func PropertyTypeAdapter(propertyType codegen.PropertyType) model.PropertyType {
 	return model.PropertyType{
-		Name: *propertyType.Name,
+		Name: propertyType.Name,
 	}
 }
