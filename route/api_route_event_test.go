@@ -54,7 +54,7 @@ func TestEventRoute(t *testing.T) {
 
 	err = apiRoute.RegisterEventType(e.NewContext(req, rec))
 	assert.NilError(t, err)
-	assert.Equal(t, rec.Code, http.StatusCreated)
+	assert.Equal(t, rec.Code, http.StatusOK)
 
 	var actualEventType model.EventType
 	err = json2.UnmarshalFromString(rec.Body.String(), &actualEventType)
