@@ -85,7 +85,7 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/RegisterEventType"
       responses:
-        "201":
+        "200":
           $ref: "#/components/responses/RegisterEventTypeOK"
         "400":
           $ref: "#/components/responses/ResponseBadRequest"
@@ -139,7 +139,7 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/PublishEvent"
       responses:
-        "201":
+        "200":
           $ref: "#/components/responses/PublishEventOK"
         "400":
           $ref: "#/components/responses/ResponseBadRequest"
@@ -184,7 +184,7 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/RegisterActionType"
       responses:
-        "201":
+        "200":
           $ref: "#/components/responses/RegisterActionTypeOK"
         "400":
           $ref: "#/components/responses/ResponseBadRequest"
@@ -238,7 +238,7 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/TriggerAction"
       responses:
-        "202":
+        "200":
           $ref: "#/components/responses/TriggerActionOK"
         "400":
           $ref: "#/components/responses/ResponseBadRequest"
