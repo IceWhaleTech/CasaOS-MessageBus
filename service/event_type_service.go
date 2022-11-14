@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"sync"
 	"time"
 
 	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
@@ -14,6 +15,7 @@ import (
 
 type EventService struct {
 	ctx                *context.Context
+	mutex              sync.Mutex
 	repository         *repository.Repository
 	inboundChannel     chan model.Event
 	subscriberChannels map[string]map[string][]chan model.Event
@@ -123,8 +125,15 @@ func (s *EventService) Unsubscribe(sourceID string, name string, c chan model.Ev
 	}
 
 	for i, subscriber := range s.subscriberChannels[sourceID][name] {
+		s.mutex.Lock()
+		defer s.mutex.Unlock()
+
 		if subscriber == c {
 			logger.Info("unsubscribing from event type", zap.String("sourceID", sourceID), zap.String("name", name), zap.Int("subscriber", i))
+			if i >= len(s.subscriberChannels[sourceID][name]) {
+				logger.Error("the i-th subscriber is removed before we get here - concurrency issue?", zap.Int("subscriber", i), zap.Int("total", len(s.subscriberChannels[sourceID][name])))
+				return ErrAlreadySubscribed
+			}
 			s.subscriberChannels[sourceID][name] = append(s.subscriberChannels[sourceID][name][:i], s.subscriberChannels[sourceID][name][i+1:]...)
 			return nil
 		}
@@ -135,6 +144,7 @@ func (s *EventService) Unsubscribe(sourceID string, name string, c chan model.Ev
 
 func (s *EventService) Start(ctx *context.Context) {
 	s.ctx = ctx
+	s.mutex = sync.Mutex{}
 
 	s.inboundChannel = make(chan model.Event)
 	s.subscriberChannels = make(map[string]map[string][]chan model.Event)

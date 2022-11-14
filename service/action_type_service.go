@@ -3,15 +3,19 @@ package service
 import (
 	"context"
 	"errors"
+	"sync"
 	"time"
 
+	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/common"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/repository"
+	"go.uber.org/zap"
 )
 
 type ActionService struct {
 	ctx                *context.Context
+	mutex              sync.Mutex
 	repository         *repository.Repository
 	inboundChannel     chan model.Action
 	subscriberChannels map[string]map[string][]chan model.Action
@@ -121,7 +125,14 @@ func (s *ActionService) Unsubscribe(sourceID string, name string, c chan model.A
 	}
 
 	for i, subscriber := range s.subscriberChannels[sourceID][name] {
+		s.mutex.Lock()
+		defer s.mutex.Unlock()
+
 		if subscriber == c {
+			if i >= len(s.subscriberChannels[sourceID][name]) {
+				logger.Error("the i-th subscriber is removed before we get here - concurrency issue?", zap.Int("subscriber", i), zap.Int("total", len(s.subscriberChannels[sourceID][name])))
+				return ErrAlreadySubscribed
+			}
 			s.subscriberChannels[sourceID][name] = append(s.subscriberChannels[sourceID][name][:i], s.subscriberChannels[sourceID][name][i+1:]...)
 			return nil
 		}
@@ -132,6 +143,7 @@ func (s *ActionService) Unsubscribe(sourceID string, name string, c chan model.A
 
 func (s *ActionService) Start(ctx *context.Context) {
 	s.ctx = ctx
+	s.mutex = sync.Mutex{}
 
 	s.inboundChannel = make(chan model.Action)
 	s.subscriberChannels = make(map[string]map[string][]chan model.Action)
