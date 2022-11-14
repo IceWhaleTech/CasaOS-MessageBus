@@ -37,7 +37,15 @@ func NewAPIRouter(swagger *openapi3.T, services *service.Services) (http.Handler
 
 	e.Use(echo_middleware.JWTWithConfig(echo_middleware.JWTConfig{
 		Skipper: func(c echo.Context) bool {
-			return c.RealIP() == "::1" || c.RealIP() == "127.0.0.1"
+			if c.RealIP() == "::1" || c.RealIP() == "127.0.0.1" {
+				return true
+			}
+
+			if c.Request().Method == echo.GET && c.Request().Header.Get(echo.HeaderUpgrade) == "websocket" {
+				return true
+			}
+
+			return false
 		},
 		ParseTokenFunc: func(token string, c echo.Context) (interface{}, error) {
 			claims, code := jwt.Validate(token)

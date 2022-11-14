@@ -15,6 +15,7 @@ type Services struct {
 var (
 	ErrInboundChannelNotFound     = errors.New("inbound channel not found")
 	ErrSubscriberChannelsNotFound = errors.New("subscriber channels not found")
+	ErrAlreadySubscribed          = errors.New("already subscribed")
 )
 
 func (s *Services) Start(ctx *context.Context) {
