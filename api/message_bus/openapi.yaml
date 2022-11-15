@@ -162,6 +162,24 @@ paths:
           description: |
             The connection will be upgraded to a WebSocket connection and the client will receive events as they are published.
 
+  /history/event/{source_id}:
+    get:
+      summary: Get event history for a source ID
+      description: |
+        Get event history for a specific source ID.
+      operationId: getEventHistoryBySourceID
+      tags:
+        - Event methods
+      parameters:
+        - $ref: "#/components/parameters/SourceID"
+        - $ref: "#/components/parameters/EventNames"
+        - $ref: "#/components/parameters/EventTimestampFrom"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetEventTypesOK"
+        "400":
+          $ref: "#/components/responses/ResponseBadRequest"
+
   /action_type:
     get:
       summary: List action types
@@ -295,6 +313,14 @@ components:
         items:
           type: string
       example: "local-storage:disk:added,local-storage:disk:removed"
+
+    EventTimestampFrom:
+      name: from
+      in: query
+      schema:
+        type: string
+        format: date-time
+        example: "2022-11-14T10:50:39.000Z"
 
     ActionName:
       name: name
