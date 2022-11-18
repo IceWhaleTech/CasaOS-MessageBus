@@ -492,10 +492,6 @@ components:
             - "local-storage:vendor"
             - "local-storage:model"
             - "local-storage:uuid"
-            - "casaos-ui:type"
-            - "casaos-ui:title"
-            - "casaos-ui:icon-1"
-            - "casaos-ui:message-1"
 
     Property:
       type: object
@@ -539,14 +535,6 @@ components:
               value: Cruzer
             - name: local-storage:uuid
               value: 442e0e5b-9d3e-4fe8-b46f-9c4141fdecd7
-            - name: casaos-ui:type
-              value: notification-style-2
-            - name: casaos-ui:title
-              value: "New disk found"
-            - name: casaos-ui:icon-1
-              value: casaos-icon-disk
-            - name: casaos-ui:message-1
-              value: "A new disk, SanDisk Cruzer, is added."
         timestamp:
           type: string
           description: timestamp this event took place
