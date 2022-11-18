@@ -185,7 +185,7 @@ func (r *APIRoute) SubscribeEvent(c echo.Context, sourceID codegen.SourceID, par
 
 			logger.Info("sending", zap.String("remote_addr", conn.RemoteAddr().String()), zap.String("message", string(message)))
 
-			if err := wsutil.WriteServerBinary(conn, message); err != nil {
+			if err := wsutil.WriteServerText(conn, message); err != nil {
 				if _, ok := err.(*net.OpError); ok {
 					logger.Info("ended", zap.String("error", err.Error()))
 				} else {
