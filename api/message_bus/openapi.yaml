@@ -465,6 +465,12 @@ components:
           type: string
           description: property name
           example: "local-storage:vendor"
+        description:
+          type: string
+          example: "Hardware vendor of this storage"
+        example:
+          type: string
+          example: "SanDisk"
 
     EventType:
       type: object
@@ -524,17 +530,14 @@ components:
           description: event name
           example: "local-storage:disk:added"
         properties:
-          type: array
+          type: object
           description: event properties
-          items:
-            $ref: "#/components/schemas/Property"
+          additionalProperties:
+            type: string
           example:
-            - name: local-storage:vendor
-              value: SanDisk
-            - name: local-storage:model
-              value: Cruzer
-            - name: local-storage:uuid
-              value: 442e0e5b-9d3e-4fe8-b46f-9c4141fdecd7
+            local-storage:vendor: SanDisk
+            local-storage:model: Cruzer
+            local-storage:uuid: 442e0e5b-9d3e-4fe8-b46f-9c4141fdecd7
         timestamp:
           type: string
           description: timestamp this event took place
