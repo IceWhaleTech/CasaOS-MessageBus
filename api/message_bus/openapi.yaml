@@ -346,9 +346,7 @@ components:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/Property"
+            $ref: "#/components/schemas/Property"
 
   responses:
     ResponseInternalServerError:
@@ -499,19 +497,8 @@ components:
 
     Property:
       type: object
-      required:
-        - "name"
-        - "value"
-      properties:
-        name:
-          type: string
-          description: property name
-          example: "local-storage:vendor"
-        value:
-          type: string
-          description: property value
-          example: "SanDisk"
-
+      additionalProperties:
+        type: string
     Event:
       type: object
       required:
@@ -576,10 +563,9 @@ components:
           description: action name
           example: "local-storage:disk:format"
         properties:
-          type: array
+          type: object
           description: action properties
-          items:
-            $ref: "#/components/schemas/Property"
+          $ref: "#/components/schemas/Property"
         timestamp:
           type: string
           description: timestamp this action took place

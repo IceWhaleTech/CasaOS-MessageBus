@@ -85,16 +85,18 @@ func (r *APIRoute) TriggerAction(c echo.Context, sourceID codegen.SourceID, name
 		return c.JSON(http.StatusNotFound, codegen.ResponseNotFound{Message: utils.Ptr("not found")})
 	}
 
-	var properties []codegen.Property
+	var properties map[string]string
 	if err := c.Bind(&properties); err != nil {
 		message := err.Error()
 		return c.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
 	}
+	pro := codegen.Property{}
+	pro = properties
 
 	action := codegen.Action{
 		SourceID:   &sourceID,
 		Name:       &name,
-		Properties: &properties,
+		Properties: &pro,
 		Timestamp:  utils.Ptr(time.Now()),
 	}
 
