@@ -10,8 +10,8 @@ import (
 
 func ActionAdapter(action model.Action) codegen.Action {
 	properties := make([]codegen.Property, 0)
-	for _, property := range action.Properties {
-		properties = append(properties, PropertyAdapter(property))
+	for k, v := range action.Properties {
+		properties = append(properties, codegen.Property{Name: k, Value: v})
 	}
 
 	return codegen.Action{

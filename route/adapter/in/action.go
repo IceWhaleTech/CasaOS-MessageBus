@@ -6,9 +6,9 @@ import (
 )
 
 func ActionAdapter(action codegen.Action) model.Action {
-	properties := make([]model.Property, 0)
+	properties := make(map[string]string)
 	for _, property := range *action.Properties {
-		properties = append(properties, PropertyAdapter(property))
+		properties[property.Name] = property.Value
 	}
 
 	var timestamp int64

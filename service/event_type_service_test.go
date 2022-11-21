@@ -83,10 +83,10 @@ func TestEventTypeService(t *testing.T) {
 		expectedEvent := model.Event{
 			SourceID: sourceID,
 			Name:     name,
-			Properties: []model.Property{
-				{Name: "Property1", Value: "Value1"},
-				{Name: "Property2", Value: "Value2"},
-			},
+			// Properties: []model.Property{
+			// 	{Name: "Property1", Value: "Value1"},
+			// 	{Name: "Property2", Value: "Value2"},
+			// },
 		}
 
 		actualEvent1, err := service.Publish(expectedEvent)

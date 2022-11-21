@@ -6,10 +6,10 @@ import (
 )
 
 func EventAdapter(event codegen.Event) model.Event {
-	properties := make([]model.Property, 0)
-	for _, property := range event.Properties {
-		properties = append(properties, PropertyAdapter(property))
-	}
+	// properties := make([]model.Property, 0)
+	// for _, property := range  {
+	// 	properties = append(properties, PropertyAdapter(property))
+	// }
 
 	var timestamp int64
 	if event.Timestamp != nil {
@@ -19,7 +19,7 @@ func EventAdapter(event codegen.Event) model.Event {
 	return model.Event{
 		SourceID:   event.SourceID,
 		Name:       event.Name,
-		Properties: properties,
+		Properties: event.Properties,
 		Timestamp:  timestamp,
 	}
 }
