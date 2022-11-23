@@ -9,15 +9,15 @@ import (
 )
 
 func EventAdapter(event model.Event) codegen.Event {
-	properties := make([]codegen.Property, 0)
-	for _, property := range event.Properties {
-		properties = append(properties, PropertyAdapter(property))
-	}
+	// properties := make([]codegen.Property, 0)
+	// for _, property := range event.Properties {
+	// 	properties = append(properties, PropertyAdapter(property))
+	// }
 
 	return codegen.Event{
 		SourceID:   event.SourceID,
 		Name:       event.Name,
-		Properties: properties,
+		Properties: event.Properties,
 		Timestamp:  utils.Ptr(time.Unix(event.Timestamp, 0)),
 	}
 }

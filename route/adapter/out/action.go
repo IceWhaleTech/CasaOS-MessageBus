@@ -9,10 +9,11 @@ import (
 )
 
 func ActionAdapter(action model.Action) codegen.Action {
-	properties := make([]codegen.Property, 0)
-	for _, property := range action.Properties {
-		properties = append(properties, PropertyAdapter(property))
-	}
+	properties := make(codegen.Property)
+	// for k, v := range action.Properties {
+	// 	properties = append(properties, codegen.Property{Name: k, Value: v})
+	// }
+	properties = action.Properties
 
 	return codegen.Action{
 		SourceID:   &action.SourceID,

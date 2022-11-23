@@ -2,6 +2,7 @@ package route
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"time"
@@ -86,10 +87,19 @@ func (r *APIRoute) PublishEvent(ctx echo.Context, sourceID codegen.SourceID, nam
 		return ctx.JSON(http.StatusNotFound, codegen.ResponseNotFound{Message: utils.Ptr("not found")})
 	}
 
-	var properties []codegen.Property
-	if err := ctx.Bind(&properties); err != nil {
+	var properties map[string]string
+	body, err := ioutil.ReadAll(ctx.Request().Body)
+
+	if err != nil {
+
 		message := err.Error()
 		return ctx.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
+	} else {
+		err = json.Unmarshal(body, &properties)
+		if err != nil {
+			message := err.Error()
+			return ctx.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
+		}
 	}
 
 	event := codegen.Event{

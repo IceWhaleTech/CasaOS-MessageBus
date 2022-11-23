@@ -6,10 +6,6 @@ import (
 )
 
 func ActionAdapter(action codegen.Action) model.Action {
-	properties := make([]model.Property, 0)
-	for _, property := range *action.Properties {
-		properties = append(properties, PropertyAdapter(property))
-	}
 
 	var timestamp int64
 	if action.Timestamp != nil {
@@ -19,7 +15,7 @@ func ActionAdapter(action codegen.Action) model.Action {
 	return model.Action{
 		SourceID:   *action.SourceID,
 		Name:       *action.Name,
-		Properties: properties,
+		Properties: *action.Properties,
 		Timestamp:  timestamp,
 	}
 }

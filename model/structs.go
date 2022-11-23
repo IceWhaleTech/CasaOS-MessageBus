@@ -13,11 +13,11 @@ type EventType struct {
 }
 
 type Event struct {
-	ID         uint       `gorm:"primaryKey"`
-	SourceID   string     `gorm:"index"`
-	Name       string     `gorm:"index"`
-	Properties []Property `gorm:"foreignKey:Id"`
-	Timestamp  int64      `gorm:"autoCreateTime:milli"`
+	ID         uint              `gorm:"primaryKey"`
+	SourceID   string            `gorm:"index"`
+	Name       string            `gorm:"index"`
+	Properties map[string]string `gorm:"foreignKey:Id"`
+	Timestamp  int64             `gorm:"autoCreateTime:milli"`
 }
 
 type ActionType struct {
@@ -27,22 +27,22 @@ type ActionType struct {
 }
 
 type Action struct {
-	ID         uint       `gorm:"primaryKey"`
-	SourceID   string     `gorm:"index"`
-	Name       string     `gorm:"index"`
-	Properties []Property `gorm:"foreignKey:Id"`
-	Timestamp  int64      `gorm:"autoCreateTime:milli"`
+	ID         uint              `gorm:"primaryKey"`
+	SourceID   string            `gorm:"index"`
+	Name       string            `gorm:"index"`
+	Properties map[string]string `gorm:"foreignKey:Id"`
+	Timestamp  int64             `gorm:"autoCreateTime:milli"`
 }
 
 type PropertyType struct {
 	Name string `gorm:"primaryKey"`
 }
 
-type Property struct {
-	ID    uint `gorm:"primaryKey"`
-	Name  string
-	Value string
-}
+// type Property struct {
+// 	ID    uint `gorm:"primaryKey"`
+// 	Name  string
+// 	Value string
+// }
 
 type GenericType struct {
 	SourceID string `gorm:"primaryKey"`
