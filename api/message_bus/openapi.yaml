@@ -514,6 +514,10 @@ components:
           type: string
           description: event name
           example: "local-storage:disk:added"
+        uuid:
+          type: string
+          description: event uuid
+          example: "442e0e5b-9d3e-4fe8-b46f-9c4141fdecd7"
         properties:
           type: object
           description: event properties

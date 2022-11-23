@@ -20,6 +20,8 @@ func EventAdapter(event codegen.Event) model.Event {
 		SourceID:   event.SourceID,
 		Name:       event.Name,
 		Properties: event.Properties,
+		Uuid:       *event.Uuid,
+
 		Timestamp:  timestamp,
 	}
 }

@@ -16,6 +16,7 @@ import (
 	"github.com/IceWhaleTech/CasaOS-MessageBus/route/adapter/out"
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 )
@@ -87,10 +88,9 @@ func (r *APIRoute) PublishEvent(ctx echo.Context, sourceID codegen.SourceID, nam
 		return ctx.JSON(http.StatusNotFound, codegen.ResponseNotFound{Message: utils.Ptr("not found")})
 	}
 
-	var properties map[string]string
-	body, err := ioutil.ReadAll(ctx.Request().Body)
+	properties := make(map[string]string)
 
-	if err != nil {
+	if err := ctx.Bind(&properties); err != nil {
 
 		message := err.Error()
 		return ctx.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
@@ -101,12 +101,13 @@ func (r *APIRoute) PublishEvent(ctx echo.Context, sourceID codegen.SourceID, nam
 			return ctx.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
 		}
 	}
-
+	uuidStr := uuid.New().String()
 	event := codegen.Event{
 		SourceID:   sourceID,
 		Name:       name,
 		Properties: properties,
 		Timestamp:  utils.Ptr(time.Now()),
+		Uuid:       &uuidStr,
 	}
 
 	result, err := r.services.EventService.Publish(in.EventAdapter(event))
