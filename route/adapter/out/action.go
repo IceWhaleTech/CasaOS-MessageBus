@@ -9,16 +9,10 @@ import (
 )
 
 func ActionAdapter(action model.Action) codegen.Action {
-	properties := make(codegen.Property)
-	// for k, v := range action.Properties {
-	// 	properties = append(properties, codegen.Property{Name: k, Value: v})
-	// }
-	properties = action.Properties
-
 	return codegen.Action{
-		SourceID:   &action.SourceID,
-		Name:       &action.Name,
-		Properties: &properties,
+		SourceID:   action.SourceID,
+		Name:       action.Name,
+		Properties: action.Properties,
 		Timestamp:  utils.Ptr(time.Unix(action.Timestamp, 0)),
 	}
 }

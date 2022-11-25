@@ -330,7 +330,14 @@ components:
       content:
         application/json:
           schema:
-              $ref: "#/components/schemas/Property"
+            type: object
+            description: event properties
+            additionalProperties:
+              type: string
+            example:
+              local-storage:vendor: SanDisk
+              local-storage:model: Cruzer
+              local-storage:uuid: 442e0e5b-9d3e-4fe8-b46f-9c4141fdecd7
 
     RegisterActionType:
       description: (TODO)
@@ -346,7 +353,12 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Property"
+            type: object
+            description: action properties
+            additionalProperties:
+              type: string
+            example:
+              local-storage:uuid: 442e0e5b-9d3e-4fe8-b46f-9c4141fdecd7
 
   responses:
     ResponseInternalServerError:
@@ -495,10 +507,6 @@ components:
             - "local-storage:model"
             - "local-storage:uuid"
 
-    Property:
-      type: object
-      additionalProperties:
-        type: string
     Event:
       type: object
       required:
@@ -557,6 +565,10 @@ components:
 
     Action:
       type: object
+      required:
+        - "sourceID"
+        - "name"
+        - "properties"
       properties:
         sourceID:
           type: string
@@ -568,8 +580,13 @@ components:
           example: "local-storage:disk:format"
         properties:
           type: object
-          description: action properties
-          $ref: "#/components/schemas/Property"
+          description: event properties
+          additionalProperties:
+            type: string
+          example:
+            local-storage:vendor: SanDisk
+            local-storage:model: Cruzer
+            local-storage:uuid: 442e0e5b-9d3e-4fe8-b46f-9c4141fdecd7
         timestamp:
           type: string
           description: timestamp this action took place
