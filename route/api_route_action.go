@@ -90,13 +90,11 @@ func (r *APIRoute) TriggerAction(c echo.Context, sourceID codegen.SourceID, name
 		message := err.Error()
 		return c.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
 	}
-	pro := codegen.Property{}
-	pro = properties
 
 	action := codegen.Action{
-		SourceID:   &sourceID,
-		Name:       &name,
-		Properties: &pro,
+		SourceID:   sourceID,
+		Name:       name,
+		Properties: properties,
 		Timestamp:  utils.Ptr(time.Now()),
 	}
 

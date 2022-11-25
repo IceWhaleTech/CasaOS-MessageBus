@@ -3,7 +3,7 @@ module github.com/IceWhaleTech/CasaOS-MessageBus
 go 1.19
 
 require (
-	github.com/IceWhaleTech/CasaOS-Common v0.3.8-alpha1
+	github.com/IceWhaleTech/CasaOS-Common v0.4.0-alpha1
 	github.com/gobwas/ws v1.1.0
 	github.com/json-iterator/go v1.1.12
 	go.uber.org/goleak v1.1.11

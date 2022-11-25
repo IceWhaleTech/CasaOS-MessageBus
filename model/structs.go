@@ -18,7 +18,7 @@ type Event struct {
 	Name       string            `gorm:"index"`
 	Properties map[string]string `gorm:"foreignKey:Id"`
 	Timestamp  int64             `gorm:"autoCreateTime:milli"`
-	Uuid       string            `json:"uuid,omitempty"`
+	UUID       string            `json:"uuid,omitempty"`
 }
 
 type ActionType struct {
