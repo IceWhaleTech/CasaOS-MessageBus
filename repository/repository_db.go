@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
-	"gorm.io/driver/sqlite"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
