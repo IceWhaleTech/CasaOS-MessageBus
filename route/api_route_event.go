@@ -138,7 +138,11 @@ func (r *APIRoute) SubscribeEvent(c echo.Context, sourceID codegen.SourceID, par
 	} else {
 		eventTypes, err := r.services.EventService.GetEventTypesBySourceID(sourceID)
 		if err != nil || len(eventTypes) == 0 {
-			message := err.Error()
+			if err != nil {
+				message := err.Error()
+				return c.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
+			}
+			message := "event types not found"
 			return c.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
 		}
 
