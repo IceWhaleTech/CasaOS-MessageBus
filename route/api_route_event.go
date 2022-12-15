@@ -37,20 +37,22 @@ func (r *APIRoute) GetEventTypes(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, results)
 }
 
-func (r *APIRoute) RegisterEventType(ctx echo.Context) error {
-	var eventType codegen.EventType
-	if err := ctx.Bind(&eventType); err != nil {
+func (r *APIRoute) RegisterEventTypes(ctx echo.Context) error {
+	var eventTypes []codegen.EventType
+	if err := ctx.Bind(&eventTypes); err != nil {
 		message := err.Error()
 		return ctx.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
 	}
 
-	result, err := r.services.EventService.RegisterEventType(in.EventTypeAdapter(eventType))
-	if err != nil {
-		message := err.Error()
-		return ctx.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
+	for _, eventType := range eventTypes {
+		_, err := r.services.EventService.RegisterEventType(in.EventTypeAdapter(eventType))
+		if err != nil {
+			message := err.Error()
+			return ctx.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
+		}
 	}
 
-	return ctx.JSON(http.StatusOK, result)
+	return ctx.JSON(http.StatusOK, codegen.ResponseOK{})
 }
 
 func (r *APIRoute) GetEventTypesBySourceID(ctx echo.Context, sourceID codegen.SourceID) error {

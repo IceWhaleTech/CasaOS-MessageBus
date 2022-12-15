@@ -76,17 +76,17 @@ paths:
           $ref: "#/components/responses/ResponseInternalServerError"
 
     post:
-      summary: Register an event type
+      summary: Register one or more event types
       description: |
-        Register a new event type with the message bus.
-      operationId: RegisterEventType
+        Register one or more new event types with the message bus.
+      operationId: RegisterEventTypes
       tags:
         - EventType methods
       requestBody:
-        $ref: "#/components/requestBodies/RegisterEventType"
+        $ref: "#/components/requestBodies/RegisterEventTypes"
       responses:
         "200":
-          $ref: "#/components/responses/RegisterEventTypeOK"
+          $ref: "#/components/responses/ResponseOK"
         "400":
           $ref: "#/components/responses/ResponseBadRequest"
         "409":
@@ -175,17 +175,17 @@ paths:
           $ref: "#/components/responses/GetActionTypesOK"
 
     post:
-      summary: Register an action type
+      summary: Register one or more action types
       description: |
-        Register a new action type with the message bus.
-      operationId: RegisterActionType
+        Register one or more new action types with the message bus.
+      operationId: RegisterActionTypes
       tags:
         - ActionType methods
       requestBody:
-        $ref: "#/components/requestBodies/RegisterActionType"
+        $ref: "#/components/requestBodies/RegisterActionTypes"
       responses:
         "200":
-          $ref: "#/components/responses/RegisterActionTypeOK"
+          $ref: "#/components/responses/ResponseOK"
         "400":
           $ref: "#/components/responses/ResponseBadRequest"
         "409":
@@ -316,13 +316,15 @@ components:
       example: "local-storage:partition:format,local-storage:partition:mount"
 
   requestBodies:
-    RegisterEventType:
+    RegisterEventTypes:
       description: (TODO)
       required: true
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/EventType"
+            type: array
+            items:
+              $ref: "#/components/schemas/EventType"
 
     PublishEvent:
       description: (TODO)
@@ -339,13 +341,15 @@ components:
               local-storage:model: Cruzer
               local-storage:uuid: 442e0e5b-9d3e-4fe8-b46f-9c4141fdecd7
 
-    RegisterActionType:
+    RegisterActionTypes:
       description: (TODO)
       required: true
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ActionType"
+            type: array
+            items:
+              $ref: "#/components/schemas/ActionType"
 
     TriggerAction:
       description: (TODO)
@@ -361,6 +365,13 @@ components:
               local-storage:uuid: 442e0e5b-9d3e-4fe8-b46f-9c4141fdecd7
 
   responses:
+    ResponseOK:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BaseResponse"
+
     ResponseInternalServerError:
       description: (TODO)
       content:
@@ -411,13 +422,6 @@ components:
           schema:
             $ref: "#/components/schemas/EventType"
 
-    RegisterEventTypeOK:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/EventType"
-
     PublishEventOK:
       description: OK
       content:
@@ -435,13 +439,6 @@ components:
               $ref: "#/components/schemas/ActionType"
 
     GetActionTypeOK:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ActionType"
-
-    RegisterActionTypeOK:
       description: OK
       content:
         application/json:
