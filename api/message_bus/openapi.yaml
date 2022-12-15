@@ -175,17 +175,17 @@ paths:
           $ref: "#/components/responses/GetActionTypesOK"
 
     post:
-      summary: Register an action type
+      summary: Register one or more action types
       description: |
-        Register a new action type with the message bus.
-      operationId: RegisterActionType
+        Register one or more new action types with the message bus.
+      operationId: RegisterActionTypes
       tags:
         - ActionType methods
       requestBody:
-        $ref: "#/components/requestBodies/RegisterActionType"
+        $ref: "#/components/requestBodies/RegisterActionTypes"
       responses:
         "200":
-          $ref: "#/components/responses/RegisterActionTypeOK"
+          $ref: "#/components/responses/ResponseOK"
         "400":
           $ref: "#/components/responses/ResponseBadRequest"
         "409":
@@ -341,13 +341,15 @@ components:
               local-storage:model: Cruzer
               local-storage:uuid: 442e0e5b-9d3e-4fe8-b46f-9c4141fdecd7
 
-    RegisterActionType:
+    RegisterActionTypes:
       description: (TODO)
       required: true
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ActionType"
+            type: array
+            items:
+              $ref: "#/components/schemas/ActionType"
 
     TriggerAction:
       description: (TODO)
@@ -437,13 +439,6 @@ components:
               $ref: "#/components/schemas/ActionType"
 
     GetActionTypeOK:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ActionType"
-
-    RegisterActionTypeOK:
       description: OK
       content:
         application/json:
