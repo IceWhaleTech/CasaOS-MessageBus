@@ -76,17 +76,17 @@ paths:
           $ref: "#/components/responses/ResponseInternalServerError"
 
     post:
-      summary: Register an event type
+      summary: Register one or more event types
       description: |
-        Register a new event type with the message bus.
-      operationId: RegisterEventType
+        Register one or more new event types with the message bus.
+      operationId: RegisterEventTypes
       tags:
         - EventType methods
       requestBody:
-        $ref: "#/components/requestBodies/RegisterEventType"
+        $ref: "#/components/requestBodies/RegisterEventTypes"
       responses:
         "200":
-          $ref: "#/components/responses/RegisterEventTypeOK"
+          $ref: "#/components/responses/ResponseOK"
         "400":
           $ref: "#/components/responses/ResponseBadRequest"
         "409":
@@ -316,13 +316,15 @@ components:
       example: "local-storage:partition:format,local-storage:partition:mount"
 
   requestBodies:
-    RegisterEventType:
+    RegisterEventTypes:
       description: (TODO)
       required: true
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/EventType"
+            type: array
+            items:
+              $ref: "#/components/schemas/EventType"
 
     PublishEvent:
       description: (TODO)
@@ -361,6 +363,13 @@ components:
               local-storage:uuid: 442e0e5b-9d3e-4fe8-b46f-9c4141fdecd7
 
   responses:
+    ResponseOK:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BaseResponse"
+
     ResponseInternalServerError:
       description: (TODO)
       content:
@@ -405,13 +414,6 @@ components:
               $ref: "#/components/schemas/EventType"
 
     GetEventTypeOK:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/EventType"
-
-    RegisterEventTypeOK:
       description: OK
       content:
         application/json:

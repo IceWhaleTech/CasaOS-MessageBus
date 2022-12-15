@@ -24,13 +24,13 @@ func TestEventRoute(t *testing.T) {
 	sourceID := "Foo"
 	name := "Bar"
 
-	expectedEventType := model.EventType{
+	expectedEventTypes := []model.EventType{{
 		SourceID:         sourceID,
 		Name:             name,
 		PropertyTypeList: []model.PropertyType{{Name: "Property1"}, {Name: "Property2"}},
-	}
+	}}
 
-	eventTypeJSON, err := json2.Marshal(expectedEventType)
+	eventTypesJSON, err := json2.Marshal(expectedEventTypes)
 	assert.NilError(t, err)
 
 	repository, err := repository.NewDatabaseRepositoryInMemory()
@@ -49,17 +49,12 @@ func TestEventRoute(t *testing.T) {
 
 	// register event type
 	rec := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodPut, "/", bytes.NewReader(eventTypeJSON))
+	req := httptest.NewRequest(http.MethodPut, "/", bytes.NewReader(eventTypesJSON))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 
-	err = apiRoute.RegisterEventType(e.NewContext(req, rec))
+	err = apiRoute.RegisterEventTypes(e.NewContext(req, rec))
 	assert.NilError(t, err)
 	assert.Equal(t, rec.Code, http.StatusOK)
-
-	var actualEventType model.EventType
-	err = json2.UnmarshalFromString(rec.Body.String(), &actualEventType)
-	assert.NilError(t, err)
-	assert.DeepEqual(t, actualEventType, expectedEventType)
 
 	// get event types
 	rec = httptest.NewRecorder()
@@ -72,7 +67,7 @@ func TestEventRoute(t *testing.T) {
 	var actualEventTypes []model.EventType
 	err = json2.UnmarshalFromString(rec.Body.String(), &actualEventTypes)
 	assert.NilError(t, err)
-	assert.DeepEqual(t, actualEventTypes, []model.EventType{expectedEventType})
+	assert.DeepEqual(t, actualEventTypes, expectedEventTypes)
 
 	// get event type
 	rec = httptest.NewRecorder()
@@ -82,9 +77,10 @@ func TestEventRoute(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, rec.Code, http.StatusOK)
 
+	var actualEventType model.EventType
 	err = json2.UnmarshalFromString(rec.Body.String(), &actualEventType)
 	assert.NilError(t, err)
-	assert.DeepEqual(t, actualEventType, expectedEventType)
+	assert.DeepEqual(t, actualEventType, expectedEventTypes[0])
 
 	// subscribe event type - TODO
 }
