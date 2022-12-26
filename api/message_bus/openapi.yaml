@@ -499,10 +499,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/PropertyType"
-          example:
-            - "local-storage:vendor"
-            - "local-storage:model"
-            - "local-storage:uuid"
 
     Event:
       type: object
