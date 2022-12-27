@@ -34,20 +34,22 @@ func (r *APIRoute) GetActionTypes(c echo.Context) error {
 	return c.JSON(http.StatusOK, results)
 }
 
-func (r *APIRoute) RegisterActionType(c echo.Context) error {
-	var actionType codegen.ActionType
-	if err := c.Bind(&actionType); err != nil {
+func (r *APIRoute) RegisterActionTypes(c echo.Context) error {
+	var actionTypes []codegen.ActionType
+	if err := c.Bind(&actionTypes); err != nil {
 		message := err.Error()
 		return c.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
 	}
 
-	result, err := r.services.ActionService.RegisterActionType(in.ActionTypeAdapter(actionType))
-	if err != nil {
-		message := err.Error()
-		return c.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
+	for _, actionType := range actionTypes {
+		_, err := r.services.ActionService.RegisterActionType(in.ActionTypeAdapter(actionType))
+		if err != nil {
+			message := err.Error()
+			return c.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
+		}
 	}
 
-	return c.JSON(http.StatusOK, result)
+	return c.JSON(http.StatusOK, codegen.ResponseOK{})
 }
 
 func (r *APIRoute) GetActionTypesBySourceID(c echo.Context, sourceID codegen.SourceID) error {

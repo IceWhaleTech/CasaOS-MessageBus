@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
-	"gorm.io/driver/sqlite"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -126,7 +126,7 @@ func NewDatabaseRepository(databaseFilePath string) (Repository, error) {
 
 	c, _ := db.DB()
 	c.SetMaxIdleConns(10)
-	c.SetMaxOpenConns(100)
+	c.SetMaxOpenConns(1)
 	c.SetConnMaxIdleTime(1000 * time.Second)
 
 	if err := db.AutoMigrate(&model.EventType{}, &model.ActionType{}, &model.PropertyType{}); err != nil {
