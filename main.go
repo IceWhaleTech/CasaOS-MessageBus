@@ -33,6 +33,9 @@ import (
 const localhost = "127.0.0.1"
 
 var (
+	commit = "private build"
+	date   = "private build"
+
 	//go:embed api/index.html
 	_docHTML string
 
@@ -51,6 +54,9 @@ func main() {
 		fmt.Printf("v%s\n", common.MessageBusVersion)
 		os.Exit(0)
 	}
+
+	println("git commit:", commit)
+	println("build date:", date)
 
 	// initialization
 	config.InitSetup(*configFlag)
