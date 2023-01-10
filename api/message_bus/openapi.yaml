@@ -151,7 +151,7 @@ paths:
       summary: Subscribe to an event type (WebSocket)
       description: |
         Subscribe to an event type by source ID and name via WebSocket.
-      operationId: subscribeEvent
+      operationId: subscribeEventWS
       tags:
         - Event methods
       parameters:

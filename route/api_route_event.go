@@ -121,7 +121,7 @@ func (r *APIRoute) PublishEvent(ctx echo.Context, sourceID codegen.SourceID, nam
 	return ctx.JSON(http.StatusOK, out.EventAdapter(*result))
 }
 
-func (r *APIRoute) SubscribeEvent(c echo.Context, sourceID codegen.SourceID, params codegen.SubscribeEventParams) error {
+func (r *APIRoute) SubscribeEventWS(c echo.Context, sourceID codegen.SourceID, params codegen.SubscribeEventWSParams) error {
 	var eventNames []string
 	if params.Names != nil {
 		for _, eventName := range *params.Names {
