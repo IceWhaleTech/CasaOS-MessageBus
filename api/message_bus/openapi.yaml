@@ -148,10 +148,12 @@ paths:
 
   /event/{source_id}:
     get:
-      summary: Subscribe to an event type (WebSocket)
+      summary: Subscribe to events by source ID (WebSocket)
       description: |
-        Subscribe to an event type by source ID and name via WebSocket.
-      operationId: subscribeEvent
+        Subscribe to event by `source_id` via WebSocket.
+
+        > `names` can be specified in the query string to subscribe to specific event types.
+      operationId: subscribeEventWS
       tags:
         - Event methods
       parameters:
@@ -161,6 +163,34 @@ paths:
         "101":
           description: |
             The connection will be upgraded to a WebSocket connection and the client will receive events as they are published.
+
+  /event:
+    get:
+      summary: Subscribe to events by source ID (SocketIO)
+      description: |
+        Subscribe to events by `source_id` via SocketIO.
+        
+        > `source_id` should be specified as the SocketIO *event* (which is a different from *event* in message bus) when listening.
+      operationId: subscribeEventSIO
+      tags:
+        - Event methods
+      responses:
+        "101":
+          description: |
+            The connection will be upgraded to a SocketIO connection and the client will receive events as they are published.
+
+  /event/:
+    get:
+      summary: Subscribe to all event types (SocketIO)
+      description: |
+        Subscribe to all event types via SocketIO.
+        > In URI definition, `/event` and `/event/` are different paths. This endpoint is a workaround to maximize compatibility.
+      operationId: subscribeEventSIO2
+      responses:
+        "101":
+          description: |
+            The connection will be upgraded to a SocketIO connection and the client will receive events as they are published.
+
 
   /action_type:
     get:
@@ -247,10 +277,12 @@ paths:
 
   /action/{source_id}:
     get:
-      summary: Subscribe to an action type (WebSocket)
+      summary: Subscribe to actions by source ID (WebSocket)
       description: |
-        Subscribe to an action type by source ID and name via WebSocket.
-      operationId: subscribeAction
+        Subscribe to actions by `source_id` via WebSocket.
+
+        > `names` can be specified in the query string to subscribe to specific action types.
+      operationId: subscribeActionWS
       tags:
         - Action methods
       parameters:
@@ -260,6 +292,33 @@ paths:
         "101":
           description: |
             The connection will be upgraded to a WebSocket connection and the client will receive actions as they are triggered.
+
+  /action:
+    get:
+      summary: Subscribe to actions by source ID (SocketIO)
+      description: |
+        Subscribe to actions by `source_id` via SocketIO.
+        
+        > `source_id` should be specified as the SocketIO *event* (which is a different from *event* in message bus) when listening.
+      operationId: subscribeActionSIO
+      tags:
+        - Action methods
+      responses:
+        "101":
+          description: |
+            The connection will be upgraded to a SocketIO connection and the client will receive actions as they are triggered.
+
+  /action/:
+    get:
+      summary: Subscribe to all action types (SocketIO)
+      description: |
+        Subscribe to all action types via SocketIO.
+        > In URI definition, `/action` and `/action/` are different paths. This endpoint is a workaround to maximize compatibility.
+      operationId: subscribeActionSIO2
+      responses:
+        "101":
+          description: |
+            The connection will be upgraded to a SocketIO connection and the client will receive actions as they are triggered.
 
 components:
   securitySchemes:
