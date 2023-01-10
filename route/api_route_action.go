@@ -109,7 +109,7 @@ func (r *APIRoute) TriggerAction(c echo.Context, sourceID codegen.SourceID, name
 	return c.JSON(http.StatusOK, out.ActionAdapter(*result))
 }
 
-func (r *APIRoute) SubscribeAction(c echo.Context, sourceID codegen.SourceID, params codegen.SubscribeActionParams) error {
+func (r *APIRoute) SubscribeActionWS(c echo.Context, sourceID codegen.SourceID, params codegen.SubscribeActionWSParams) error {
 	var actionNames []string
 	if params.Names != nil {
 		for _, actionName := range *params.Names {
@@ -156,23 +156,23 @@ func (r *APIRoute) SubscribeAction(c echo.Context, sourceID codegen.SourceID, pa
 		defer func(actionNames []string) {
 			for _, name := range actionNames {
 				if err := r.services.ActionServiceWS.Unsubscribe(sourceID, name, channel); err != nil {
-					logger.Error("error when trying to unsubscribe an action type", zap.Error(err), zap.String("source_id", sourceID), zap.String("name", name))
+					logger.Error("error when trying to unsubscribe an action type via websocket", zap.Error(err), zap.String("source_id", sourceID), zap.String("name", name))
 				}
 			}
 		}(actionNames)
 
-		logger.Info("started", zap.String("remote_addr", conn.RemoteAddr().String()))
+		logger.Info("a websocket connection has started for actions", zap.String("remote_addr", conn.RemoteAddr().String()))
 
 		for {
 			action, ok := <-channel
 			if !ok {
-				logger.Info("channel closed")
+				logger.Info("websocket channel for events is closed")
 				return
 			}
 
 			if action.SourceID == common.MessageBusSourceID && action.Name == common.MessageBusHeartbeatName {
 				if err := wsutil.WriteServerMessage(conn, ws.OpPing, []byte{}); err != nil {
-					logger.Error("error when trying to send ping message", zap.Error(err))
+					logger.Error("error when trying to send ping message via websocket", zap.Error(err))
 					return
 				}
 				continue
@@ -180,17 +180,17 @@ func (r *APIRoute) SubscribeAction(c echo.Context, sourceID codegen.SourceID, pa
 
 			message, err := json.Marshal(out.ActionAdapter(action))
 			if err != nil {
-				logger.Error("error when trying to marshal action", zap.Error(err))
+				logger.Error("error when trying to marshal action for websocket", zap.Error(err))
 				continue
 			}
 
-			logger.Info("sending", zap.String("remote_addr", conn.RemoteAddr().String()), zap.String("message", string(message)))
+			logger.Info("sending action via websocket", zap.String("remote_addr", conn.RemoteAddr().String()), zap.String("message", string(message)))
 
 			if err := wsutil.WriteServerBinary(conn, message); err != nil {
 				if _, ok := err.(*net.OpError); ok {
-					logger.Info("ended", zap.String("error", err.Error()))
+					logger.Info("websocket connection ended", zap.String("error", err.Error()))
 				} else {
-					logger.Error("error", zap.String("error", err.Error()))
+					logger.Error("error when sending event via websocket", zap.String("error", err.Error()))
 				}
 				return
 			}
@@ -198,4 +198,15 @@ func (r *APIRoute) SubscribeAction(c echo.Context, sourceID codegen.SourceID, pa
 	}(conn, channel, actionNames)
 
 	return nil
+}
+
+func (r *APIRoute) SubscribeActionSIO(ctx echo.Context) error {
+	server := r.services.ActionServiceSIO.Server()
+	server.ServeHTTP(ctx.Response(), ctx.Request())
+	return nil
+}
+
+// unfortunately need to duplicate this func to support both `/action` and `/action/` API endpoints
+func (r *APIRoute) SubscribeActionSIO2(ctx echo.Context) error {
+	return r.SubscribeActionSIO(ctx)
 }

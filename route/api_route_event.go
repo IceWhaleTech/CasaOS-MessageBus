@@ -174,23 +174,23 @@ func (r *APIRoute) SubscribeEventWS(c echo.Context, sourceID codegen.SourceID, p
 		defer func(eventNames []string) {
 			for _, name := range eventNames {
 				if err := r.services.EventServiceWS.Unsubscribe(sourceID, name, channel); err != nil {
-					logger.Error("error when trying to unsubscribe an event type", zap.Error(err), zap.String("source_id", sourceID), zap.String("name", name))
+					logger.Error("error when trying to unsubscribe an event type via websocket", zap.Error(err), zap.String("source_id", sourceID), zap.String("name", name))
 				}
 			}
 		}(eventNames)
 
-		logger.Info("started", zap.String("remote_addr", conn.RemoteAddr().String()))
+		logger.Info("a websocket connection has started for events", zap.String("remote_addr", conn.RemoteAddr().String()))
 
 		for {
 			event, ok := <-channel
 			if !ok {
-				logger.Info("channel closed")
+				logger.Info("websocket channel for events is closed")
 				return
 			}
 
 			if event.SourceID == common.MessageBusSourceID && event.Name == common.MessageBusHeartbeatName {
 				if err := wsutil.WriteServerMessage(conn, ws.OpPing, []byte{}); err != nil {
-					logger.Error("error when trying to send ping message", zap.Error(err))
+					logger.Error("error when trying to send ping message via websocket", zap.Error(err))
 					return
 				}
 				continue
@@ -198,17 +198,17 @@ func (r *APIRoute) SubscribeEventWS(c echo.Context, sourceID codegen.SourceID, p
 
 			message, err := json.Marshal(out.EventAdapter(event))
 			if err != nil {
-				logger.Error("error when trying to marshal event", zap.Error(err))
+				logger.Error("error when trying to marshal event for websocket", zap.Error(err))
 				continue
 			}
 
-			logger.Info("sending", zap.String("remote_addr", conn.RemoteAddr().String()), zap.String("message", string(message)))
+			logger.Info("sending event via websocket", zap.String("remote_addr", conn.RemoteAddr().String()), zap.String("message", string(message)))
 
 			if err := wsutil.WriteServerText(conn, message); err != nil {
 				if _, ok := err.(*net.OpError); ok {
-					logger.Info("ended", zap.String("error", err.Error()))
+					logger.Info("websocket connection ended", zap.String("error", err.Error()))
 				} else {
-					logger.Error("error", zap.String("error", err.Error()))
+					logger.Error("error when sending event via websocket", zap.String("error", err.Error()))
 				}
 				return
 			}
@@ -220,8 +220,11 @@ func (r *APIRoute) SubscribeEventWS(c echo.Context, sourceID codegen.SourceID, p
 
 func (r *APIRoute) SubscribeEventSIO(ctx echo.Context) error {
 	server := r.services.EventServiceSIO.Server()
-
 	server.ServeHTTP(ctx.Response(), ctx.Request())
-
 	return nil
+}
+
+// unfortunately need to duplicate the func to support both `/event` and `/event/` API endpoints
+func (r *APIRoute) SubscribeEventSIO2(ctx echo.Context) error {
+	return r.SubscribeEventSIO(ctx)
 }
