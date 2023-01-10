@@ -22,7 +22,7 @@ import (
 )
 
 func (r *APIRoute) GetEventTypes(ctx echo.Context) error {
-	eventTypes, err := r.services.EventService.GetEventTypes()
+	eventTypes, err := r.services.EventTypeService.GetEventTypes()
 	if err != nil {
 		message := err.Error()
 		return ctx.JSON(http.StatusInternalServerError, codegen.ResponseInternalServerError{Message: &message})
@@ -45,7 +45,7 @@ func (r *APIRoute) RegisterEventTypes(ctx echo.Context) error {
 	}
 
 	for _, eventType := range eventTypes {
-		_, err := r.services.EventService.RegisterEventType(in.EventTypeAdapter(eventType))
+		_, err := r.services.EventTypeService.RegisterEventType(in.EventTypeAdapter(eventType))
 		if err != nil {
 			message := err.Error()
 			return ctx.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
@@ -56,7 +56,7 @@ func (r *APIRoute) RegisterEventTypes(ctx echo.Context) error {
 }
 
 func (r *APIRoute) GetEventTypesBySourceID(ctx echo.Context, sourceID codegen.SourceID) error {
-	results, err := r.services.EventService.GetEventTypesBySourceID(sourceID)
+	results, err := r.services.EventTypeService.GetEventTypesBySourceID(sourceID)
 	if err != nil {
 		message := err.Error()
 		return ctx.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
@@ -66,7 +66,7 @@ func (r *APIRoute) GetEventTypesBySourceID(ctx echo.Context, sourceID codegen.So
 }
 
 func (r *APIRoute) GetEventType(ctx echo.Context, sourceID codegen.SourceID, name codegen.EventName) error {
-	result, err := r.services.EventService.GetEventType(sourceID, name)
+	result, err := r.services.EventTypeService.GetEventType(sourceID, name)
 	if err != nil {
 		message := err.Error()
 		return ctx.JSON(http.StatusNotFound, codegen.ResponseNotFound{Message: &message})
@@ -80,7 +80,7 @@ func (r *APIRoute) GetEventType(ctx echo.Context, sourceID codegen.SourceID, nam
 }
 
 func (r *APIRoute) PublishEvent(ctx echo.Context, sourceID codegen.SourceID, name codegen.EventName) error {
-	eventType, err := r.services.EventService.GetEventType(sourceID, name)
+	eventType, err := r.services.EventTypeService.GetEventType(sourceID, name)
 	if err != nil {
 		message := err.Error()
 		return ctx.JSON(http.StatusNotFound, codegen.ResponseNotFound{Message: &message})
@@ -112,7 +112,7 @@ func (r *APIRoute) PublishEvent(ctx echo.Context, sourceID codegen.SourceID, nam
 		Uuid:       &uuidStr,
 	}
 
-	result, err := r.services.EventService.Publish(in.EventAdapter(event))
+	result, err := r.services.EventServiceWS.Publish(in.EventAdapter(event))
 	if err != nil {
 		message := err.Error()
 		return ctx.JSON(http.StatusInternalServerError, codegen.ResponseInternalServerError{Message: &message})
@@ -125,7 +125,7 @@ func (r *APIRoute) SubscribeEvent(c echo.Context, sourceID codegen.SourceID, par
 	var eventNames []string
 	if params.Names != nil {
 		for _, eventName := range *params.Names {
-			eventType, err := r.services.EventService.GetEventType(sourceID, eventName)
+			eventType, err := r.services.EventTypeService.GetEventType(sourceID, eventName)
 			if err != nil {
 				message := err.Error()
 				return c.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
@@ -138,7 +138,7 @@ func (r *APIRoute) SubscribeEvent(c echo.Context, sourceID codegen.SourceID, par
 			eventNames = append(eventNames, eventName)
 		}
 	} else {
-		eventTypes, err := r.services.EventService.GetEventTypesBySourceID(sourceID)
+		eventTypes, err := r.services.EventTypeService.GetEventTypesBySourceID(sourceID)
 		if err != nil || len(eventTypes) == 0 {
 			if err != nil {
 				message := err.Error()
@@ -159,7 +159,7 @@ func (r *APIRoute) SubscribeEvent(c echo.Context, sourceID codegen.SourceID, par
 		return c.JSON(http.StatusInternalServerError, codegen.ResponseInternalServerError{Message: &message})
 	}
 
-	channel, err := r.services.EventService.Subscribe(sourceID, eventNames)
+	channel, err := r.services.EventServiceWS.Subscribe(sourceID, eventNames)
 	if err != nil {
 		conn.Close() // need to close connection here, instead of defer, because of the goroutine
 		message := err.Error()
@@ -171,7 +171,7 @@ func (r *APIRoute) SubscribeEvent(c echo.Context, sourceID codegen.SourceID, par
 		defer close(channel)
 		defer func(eventNames []string) {
 			for _, name := range eventNames {
-				if err := r.services.EventService.Unsubscribe(sourceID, name, channel); err != nil {
+				if err := r.services.EventServiceWS.Unsubscribe(sourceID, name, channel); err != nil {
 					logger.Error("error when trying to unsubscribe an event type", zap.Error(err), zap.String("source_id", sourceID), zap.String("name", name))
 				}
 			}

@@ -8,7 +8,9 @@ import (
 )
 
 type Services struct {
-	EventService  *EventService
+	EventTypeService *EventTypeService
+	EventServiceWS   *EventServiceWS
+
 	ActionService *ActionService
 }
 
@@ -19,13 +21,13 @@ var (
 )
 
 func (s *Services) Start(ctx *context.Context) {
-	go s.EventService.Start(ctx)
+	go s.EventServiceWS.Start(ctx)
 	go s.ActionService.Start(ctx)
 }
 
 func NewServices(repository *repository.Repository) Services {
 	return Services{
-		EventService:  NewEventService(repository),
-		ActionService: NewActionService(repository),
+		EventTypeService: NewEventTypeService(repository),
+		ActionService:    NewActionService(repository),
 	}
 }
