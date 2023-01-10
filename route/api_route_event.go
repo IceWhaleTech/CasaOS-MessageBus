@@ -112,6 +112,8 @@ func (r *APIRoute) PublishEvent(ctx echo.Context, sourceID codegen.SourceID, nam
 		Uuid:       &uuidStr,
 	}
 
+	go r.services.EventServiceSIO.Publish(in.EventAdapter(event))
+
 	result, err := r.services.EventServiceWS.Publish(in.EventAdapter(event))
 	if err != nil {
 		message := err.Error()
@@ -212,6 +214,14 @@ func (r *APIRoute) SubscribeEventWS(c echo.Context, sourceID codegen.SourceID, p
 			}
 		}
 	}(conn, channel, eventNames)
+
+	return nil
+}
+
+func (r *APIRoute) SubscribeEventSIO(ctx echo.Context) error {
+	server := r.services.EventServiceSIO.Server()
+
+	server.ServeHTTP(ctx.Response(), ctx.Request())
 
 	return nil
 }

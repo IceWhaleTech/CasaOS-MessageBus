@@ -162,6 +162,19 @@ paths:
           description: |
             The connection will be upgraded to a WebSocket connection and the client will receive events as they are published.
 
+  /event/:
+    get:
+      summary: Subscribe to all event types (SocketIO)
+      description: |
+        Subscribe to all event types via SocketIO.
+      operationId: subscribeEventSIO
+      tags:
+        - Event methods
+      responses:
+        "101":
+          description: |
+            The connection will be upgraded to a SocketIO connection and the client will receive events as they are published.
+
   /action_type:
     get:
       summary: List action types
