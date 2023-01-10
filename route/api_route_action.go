@@ -19,7 +19,7 @@ import (
 )
 
 func (r *APIRoute) GetActionTypes(c echo.Context) error {
-	actionType, err := r.services.ActionService.GetActionTypes()
+	actionType, err := r.services.ActionTypeService.GetActionTypes()
 	if err != nil {
 		message := err.Error()
 		return c.JSON(http.StatusInternalServerError, codegen.ResponseInternalServerError{Message: &message})
@@ -42,7 +42,7 @@ func (r *APIRoute) RegisterActionTypes(c echo.Context) error {
 	}
 
 	for _, actionType := range actionTypes {
-		_, err := r.services.ActionService.RegisterActionType(in.ActionTypeAdapter(actionType))
+		_, err := r.services.ActionTypeService.RegisterActionType(in.ActionTypeAdapter(actionType))
 		if err != nil {
 			message := err.Error()
 			return c.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
@@ -53,7 +53,7 @@ func (r *APIRoute) RegisterActionTypes(c echo.Context) error {
 }
 
 func (r *APIRoute) GetActionTypesBySourceID(c echo.Context, sourceID codegen.SourceID) error {
-	results, err := r.services.ActionService.GetActionTypesBySourceID(sourceID)
+	results, err := r.services.ActionTypeService.GetActionTypesBySourceID(sourceID)
 	if err != nil {
 		message := err.Error()
 		return c.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
@@ -63,7 +63,7 @@ func (r *APIRoute) GetActionTypesBySourceID(c echo.Context, sourceID codegen.Sou
 }
 
 func (r *APIRoute) GetActionType(c echo.Context, sourceID codegen.SourceID, name codegen.EventName) error {
-	result, err := r.services.ActionService.GetActionType(sourceID, name)
+	result, err := r.services.ActionTypeService.GetActionType(sourceID, name)
 	if err != nil {
 		message := err.Error()
 		return c.JSON(http.StatusNotFound, codegen.ResponseNotFound{Message: &message})
@@ -77,7 +77,7 @@ func (r *APIRoute) GetActionType(c echo.Context, sourceID codegen.SourceID, name
 }
 
 func (r *APIRoute) TriggerAction(c echo.Context, sourceID codegen.SourceID, name codegen.EventName) error {
-	actionType, err := r.services.ActionService.GetActionType(sourceID, name)
+	actionType, err := r.services.ActionTypeService.GetActionType(sourceID, name)
 	if err != nil {
 		message := err.Error()
 		return c.JSON(http.StatusNotFound, codegen.ResponseNotFound{Message: &message})
@@ -100,7 +100,7 @@ func (r *APIRoute) TriggerAction(c echo.Context, sourceID codegen.SourceID, name
 		Timestamp:  utils.Ptr(time.Now()),
 	}
 
-	result, err := r.services.ActionService.Trigger(in.ActionAdapter(action))
+	result, err := r.services.ActionServiceWS.Trigger(in.ActionAdapter(action))
 	if err != nil {
 		message := err.Error()
 		return c.JSON(http.StatusInternalServerError, codegen.ResponseInternalServerError{Message: &message})
@@ -113,7 +113,7 @@ func (r *APIRoute) SubscribeAction(c echo.Context, sourceID codegen.SourceID, pa
 	var actionNames []string
 	if params.Names != nil {
 		for _, actionName := range *params.Names {
-			actionType, err := r.services.ActionService.GetActionType(sourceID, actionName)
+			actionType, err := r.services.ActionTypeService.GetActionType(sourceID, actionName)
 			if err != nil {
 				message := err.Error()
 				return c.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
@@ -126,7 +126,7 @@ func (r *APIRoute) SubscribeAction(c echo.Context, sourceID codegen.SourceID, pa
 			actionNames = append(actionNames, actionName)
 		}
 	} else {
-		actionTypes, err := r.services.ActionService.GetActionTypesBySourceID(sourceID)
+		actionTypes, err := r.services.ActionTypeService.GetActionTypesBySourceID(sourceID)
 		if err != nil {
 			message := err.Error()
 			return c.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
@@ -143,7 +143,7 @@ func (r *APIRoute) SubscribeAction(c echo.Context, sourceID codegen.SourceID, pa
 		return c.JSON(http.StatusInternalServerError, codegen.ResponseInternalServerError{Message: &message})
 	}
 
-	channel, err := r.services.ActionService.Subscribe(sourceID, actionNames)
+	channel, err := r.services.ActionServiceWS.Subscribe(sourceID, actionNames)
 	if err != nil {
 		conn.Close() // need to close connection here, instead of defer, because of the goroutine
 		message := err.Error()
@@ -155,7 +155,7 @@ func (r *APIRoute) SubscribeAction(c echo.Context, sourceID codegen.SourceID, pa
 		defer close(channel)
 		defer func(actionNames []string) {
 			for _, name := range actionNames {
-				if err := r.services.ActionService.Unsubscribe(sourceID, name, channel); err != nil {
+				if err := r.services.ActionServiceWS.Unsubscribe(sourceID, name, channel); err != nil {
 					logger.Error("error when trying to unsubscribe an action type", zap.Error(err), zap.String("source_id", sourceID), zap.String("name", name))
 				}
 			}

@@ -11,7 +11,8 @@ type Services struct {
 	EventTypeService *EventTypeService
 	EventServiceWS   *EventServiceWS
 
-	ActionService *ActionService
+	ActionTypeService *ActionTypeService
+	ActionServiceWS   *ActionServiceWS
 }
 
 var (
@@ -22,12 +23,12 @@ var (
 
 func (s *Services) Start(ctx *context.Context) {
 	go s.EventServiceWS.Start(ctx)
-	go s.ActionService.Start(ctx)
+	go s.ActionServiceWS.Start(ctx)
 }
 
 func NewServices(repository *repository.Repository) Services {
 	return Services{
-		EventTypeService: NewEventTypeService(repository),
-		ActionService:    NewActionService(repository),
+		EventTypeService:  NewEventTypeService(repository),
+		ActionTypeService: NewActionTypeService(repository),
 	}
 }

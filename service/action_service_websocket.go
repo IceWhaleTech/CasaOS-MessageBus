@@ -6,36 +6,35 @@ import (
 	"time"
 
 	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
-
 	"github.com/IceWhaleTech/CasaOS-MessageBus/common"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 	"go.uber.org/zap"
 )
 
-type EventServiceWS struct {
-	typeService *EventTypeService
+type ActionServiceWS struct {
+	typeService *ActionTypeService
 
 	ctx   *context.Context
 	mutex sync.Mutex
 	stop  chan struct{}
 
-	inboundChannel     chan model.Event
-	subscriberChannels map[string]map[string][]chan model.Event
+	inboundChannel     chan model.Action
+	subscriberChannels map[string]map[string][]chan model.Action
 }
 
-func (s *EventServiceWS) Publish(event model.Event) (*model.Event, error) {
+func (s *ActionServiceWS) Trigger(action model.Action) (*model.Action, error) {
 	if s.inboundChannel == nil {
 		return nil, ErrInboundChannelNotFound
 	}
 
-	if event.Timestamp == 0 {
-		event.Timestamp = time.Now().Unix()
+	if action.Timestamp == 0 {
+		action.Timestamp = time.Now().Unix()
 	}
 
 	// TODO - ensure properties are valid for event type
 
 	select {
-	case s.inboundChannel <- event:
+	case s.inboundChannel <- action:
 
 	case <-(*s.ctx).Done():
 		return nil, (*s.ctx).Err()
@@ -43,45 +42,45 @@ func (s *EventServiceWS) Publish(event model.Event) (*model.Event, error) {
 	default: // drop event if no one is listening
 	}
 
-	return &event, nil
+	return &action, nil
 }
 
-func (s *EventServiceWS) Subscribe(sourceID string, names []string) (chan model.Event, error) {
+func (s *ActionServiceWS) Subscribe(sourceID string, names []string) (chan model.Action, error) {
 	if len(names) == 0 {
-		eventTypes, err := s.typeService.GetEventTypesBySourceID(sourceID)
+		actionTypes, err := s.typeService.GetActionTypesBySourceID(sourceID)
 		if err != nil {
 			return nil, err
 		}
 
-		for _, eventType := range eventTypes {
-			names = append(names, eventType.Name)
+		for _, actionType := range actionTypes {
+			names = append(names, actionType.Name)
 		}
 	}
 
 	for _, name := range names {
-		eventType, err := s.typeService.GetEventType(sourceID, name)
+		actionType, err := s.typeService.GetActionType(sourceID, name)
 		if err != nil {
 			return nil, err
 		}
 
-		if eventType == nil {
-			return nil, ErrEventNameNotFound
+		if actionType == nil {
+			return nil, ErrActionNameNotFound
 		}
 	}
 
 	if s.subscriberChannels == nil {
-		s.subscriberChannels = make(map[string]map[string][]chan model.Event)
+		s.subscriberChannels = make(map[string]map[string][]chan model.Action)
 	}
 
 	if s.subscriberChannels[sourceID] == nil {
-		s.subscriberChannels[sourceID] = make(map[string][]chan model.Event)
+		s.subscriberChannels[sourceID] = make(map[string][]chan model.Action)
 	}
 
-	c := make(chan model.Event, 1)
+	c := make(chan model.Action, 1)
 
 	for _, name := range names {
 		if s.subscriberChannels[sourceID][name] == nil {
-			s.subscriberChannels[sourceID][name] = make([]chan model.Event, 0)
+			s.subscriberChannels[sourceID][name] = make([]chan model.Action, 0)
 		}
 		s.subscriberChannels[sourceID][name] = append(s.subscriberChannels[sourceID][name], c)
 	}
@@ -89,17 +88,17 @@ func (s *EventServiceWS) Subscribe(sourceID string, names []string) (chan model.
 	return c, nil
 }
 
-func (s *EventServiceWS) Unsubscribe(sourceID string, name string, c chan model.Event) error {
+func (s *ActionServiceWS) Unsubscribe(sourceID string, name string, c chan model.Action) error {
 	if s.subscriberChannels == nil {
 		return ErrSubscriberChannelsNotFound
 	}
 
 	if s.subscriberChannels[sourceID] == nil {
-		return ErrEventSourceIDNotFound
+		return ErrActionSourceIDNotFound
 	}
 
 	if s.subscriberChannels[sourceID][name] == nil {
-		return ErrEventNameNotFound
+		return ErrActionNameNotFound
 	}
 
 	for i, subscriber := range s.subscriberChannels[sourceID][name] {
@@ -107,7 +106,6 @@ func (s *EventServiceWS) Unsubscribe(sourceID string, name string, c chan model.
 		defer s.mutex.Unlock()
 
 		if subscriber == c {
-			logger.Info("unsubscribing from event type", zap.String("sourceID", sourceID), zap.String("name", name), zap.Int("subscriber", i))
 			if i >= len(s.subscriberChannels[sourceID][name]) {
 				logger.Error("the i-th subscriber is removed before we get here - concurrency issue?", zap.Int("subscriber", i), zap.Int("total", len(s.subscriberChannels[sourceID][name])))
 				return ErrAlreadySubscribed
@@ -120,18 +118,18 @@ func (s *EventServiceWS) Unsubscribe(sourceID string, name string, c chan model.
 	return nil
 }
 
-func (s *EventServiceWS) Start(ctx *context.Context) {
+func (s *ActionServiceWS) Start(ctx *context.Context) {
 	s.ctx = ctx
 	s.mutex = sync.Mutex{}
 
-	s.inboundChannel = make(chan model.Event)
-	s.subscriberChannels = make(map[string]map[string][]chan model.Event)
+	s.inboundChannel = make(chan model.Action)
+	s.subscriberChannels = make(map[string]map[string][]chan model.Action)
 	s.stop = make(chan struct{})
 
 	defer func() {
 		if s.subscriberChannels != nil {
 			for sourceID, source := range s.subscriberChannels {
-				for eventName, subscribers := range source {
+				for actionName, subscribers := range source {
 					for _, subscriber := range subscribers {
 						select {
 						case _, ok := <-subscriber:
@@ -142,7 +140,7 @@ func (s *EventServiceWS) Start(ctx *context.Context) {
 							continue
 						}
 					}
-					delete(s.subscriberChannels[sourceID], eventName)
+					delete(s.subscriberChannels[sourceID], actionName)
 				}
 				delete(s.subscriberChannels, sourceID)
 			}
@@ -165,7 +163,7 @@ func (s *EventServiceWS) Start(ctx *context.Context) {
 		case <-(*s.ctx).Done():
 			return
 
-		case event, ok := <-s.inboundChannel:
+		case action, ok := <-s.inboundChannel:
 			if !ok {
 				return
 			}
@@ -174,17 +172,17 @@ func (s *EventServiceWS) Start(ctx *context.Context) {
 				continue
 			}
 
-			if s.subscriberChannels[event.SourceID] == nil {
+			if s.subscriberChannels[action.SourceID] == nil {
 				continue
 			}
 
-			if s.subscriberChannels[event.SourceID][event.Name] == nil {
+			if s.subscriberChannels[action.SourceID][action.Name] == nil {
 				continue
 			}
 
-			for _, c := range s.subscriberChannels[event.SourceID][event.Name] {
+			for _, c := range s.subscriberChannels[action.SourceID][action.Name] {
 				select {
-				case c <- event:
+				case c <- action:
 				case <-(*s.ctx).Done():
 					return
 				default: // drop event if no one is listening
@@ -197,7 +195,7 @@ func (s *EventServiceWS) Start(ctx *context.Context) {
 				continue
 			}
 
-			heartbeat := model.Event{
+			heartbeat := model.Action{
 				SourceID:  common.MessageBusSourceID,
 				Name:      common.MessageBusHeartbeatName,
 				Timestamp: time.Now().Unix(),
@@ -220,8 +218,8 @@ func (s *EventServiceWS) Start(ctx *context.Context) {
 	}
 }
 
-func NewEventServiceWS(eventTypeService *EventTypeService) *EventServiceWS {
-	return &EventServiceWS{
-		typeService: eventTypeService,
+func NewActionServiceWS(actionTypeService *ActionTypeService) *ActionServiceWS {
+	return &ActionServiceWS{
+		typeService: actionTypeService,
 	}
 }
