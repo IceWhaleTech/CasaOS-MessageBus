@@ -112,7 +112,7 @@ func (r *APIRoute) PublishEvent(ctx echo.Context, sourceID codegen.SourceID, nam
 		Uuid:       &uuidStr,
 	}
 
-	go r.services.EventServiceSIO.Publish(in.EventAdapter(event))
+	go r.services.SocketIOService.Publish(in.EventAdapter(event))
 
 	result, err := r.services.EventServiceWS.Publish(in.EventAdapter(event))
 	if err != nil {
@@ -216,15 +216,4 @@ func (r *APIRoute) SubscribeEventWS(c echo.Context, sourceID codegen.SourceID, p
 	}(conn, channel, eventNames)
 
 	return nil
-}
-
-func (r *APIRoute) SubscribeEventSIO(ctx echo.Context) error {
-	server := r.services.EventServiceSIO.Server()
-	server.ServeHTTP(ctx.Response(), ctx.Request())
-	return nil
-}
-
-// unfortunately need to duplicate the func to support both `/event` and `/event/` API endpoints
-func (r *APIRoute) SubscribeEventSIO2(ctx echo.Context) error {
-	return r.SubscribeEventSIO(ctx)
 }

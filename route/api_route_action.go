@@ -100,6 +100,8 @@ func (r *APIRoute) TriggerAction(c echo.Context, sourceID codegen.SourceID, name
 		Timestamp:  utils.Ptr(time.Now()),
 	}
 
+	go r.services.SocketIOService.Publish(in.ActionAdapter(action))
+
 	result, err := r.services.ActionServiceWS.Trigger(in.ActionAdapter(action))
 	if err != nil {
 		message := err.Error()
@@ -198,15 +200,4 @@ func (r *APIRoute) SubscribeActionWS(c echo.Context, sourceID codegen.SourceID, 
 	}(conn, channel, actionNames)
 
 	return nil
-}
-
-func (r *APIRoute) SubscribeActionSIO(ctx echo.Context) error {
-	server := r.services.ActionServiceSIO.Server()
-	server.ServeHTTP(ctx.Response(), ctx.Request())
-	return nil
-}
-
-// unfortunately need to duplicate this func to support both `/action` and `/action/` API endpoints
-func (r *APIRoute) SubscribeActionSIO2(ctx echo.Context) error {
-	return r.SubscribeActionSIO(ctx)
 }
