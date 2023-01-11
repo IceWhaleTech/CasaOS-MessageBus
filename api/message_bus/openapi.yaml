@@ -26,6 +26,14 @@ tags:
     description: |-
       methods for managing action types, as well as publishing and subscribing to actions
 
+  - name: Websocket Endpoints
+    description: |-
+      Endpoint paths for subscribing to events and actions via WebSocket
+
+  - name: SocketIO Endpoints
+    description: |-
+      Endpoint paths for subscribing to events and actions via SocketIO
+
   - name: EventType
     description: |-
       <SchemaDefinition schemaRef="#/components/schemas/EventType" />
@@ -42,6 +50,10 @@ tags:
     description: |-
       <SchemaDefinition schemaRef="#/components/schemas/Action" />
 
+  - name: PropertyType
+    description: |-
+      <SchemaDefinition schemaRef="#/components/schemas/PropertyType" />
+
 x-tagGroups:
   - name: Methods
     tags:
@@ -50,12 +62,18 @@ x-tagGroups:
       - ActionType methods
       - Action methods
 
+  - name: Endpoints
+    tags:
+      - WebSocket Endpoints
+      - SocketIO Endpoints
+
   - name: Schemas
     tags:
       - EventType
       - Event
       - ActionType
       - Action
+      - PropertyType
 
 security:
   - access_token: []
@@ -155,7 +173,7 @@ paths:
         > `names` can be specified in the query string to subscribe to specific event types.
       operationId: subscribeEventWS
       tags:
-        - Event methods
+        - WebSocket Endpoints
       parameters:
         - $ref: "#/components/parameters/SourceID"
         - $ref: "#/components/parameters/EventNames"
@@ -163,34 +181,6 @@ paths:
         "101":
           description: |
             The connection will be upgraded to a WebSocket connection and the client will receive events as they are published.
-
-  /event:
-    get:
-      summary: Subscribe to events by source ID (SocketIO)
-      description: |
-        Subscribe to events by `source_id` via SocketIO.
-        
-        > `source_id` should be specified as the SocketIO *event* (which is a different from *event* in message bus) when listening.
-      operationId: subscribeEventSIO
-      tags:
-        - Event methods
-      responses:
-        "101":
-          description: |
-            The connection will be upgraded to a SocketIO connection and the client will receive events as they are published.
-
-  /event/:
-    get:
-      summary: Subscribe to all event types (SocketIO)
-      description: |
-        Subscribe to all event types via SocketIO.
-        > In URI definition, `/event` and `/event/` are different paths. This endpoint is a workaround to maximize compatibility.
-      operationId: subscribeEventSIO2
-      responses:
-        "101":
-          description: |
-            The connection will be upgraded to a SocketIO connection and the client will receive events as they are published.
-
 
   /action_type:
     get:
@@ -284,7 +274,7 @@ paths:
         > `names` can be specified in the query string to subscribe to specific action types.
       operationId: subscribeActionWS
       tags:
-        - Action methods
+        - WebSocket Endpoints
       parameters:
         - $ref: "#/components/parameters/SourceID"
         - $ref: "#/components/parameters/ActionNames"
@@ -293,32 +283,60 @@ paths:
           description: |
             The connection will be upgraded to a WebSocket connection and the client will receive actions as they are triggered.
 
-  /action:
+  /socket.io:
     get:
-      summary: Subscribe to actions by source ID (SocketIO)
+      summary: Subscribe to events and actions (SocketIO)
       description: |
-        Subscribe to actions by `source_id` via SocketIO.
-        
-        > `source_id` should be specified as the SocketIO *event* (which is a different from *event* in message bus) when listening.
-      operationId: subscribeActionSIO
-      tags:
-        - Action methods
-      responses:
-        "101":
-          description: |
-            The connection will be upgraded to a SocketIO connection and the client will receive actions as they are triggered.
+        Subscribe to events and actions via SocketIO.
 
-  /action/:
-    get:
-      summary: Subscribe to all action types (SocketIO)
-      description: |
-        Subscribe to all action types via SocketIO.
-        > In URI definition, `/action` and `/action/` are different paths. This endpoint is a workaround to maximize compatibility.
-      operationId: subscribeActionSIO2
+        - SocketIO `room` should be either `event` or `action`
+
+      operationId: subscribeSIO
+      tags:
+        - SocketIO Endpoints
       responses:
         "101":
           description: |
-            The connection will be upgraded to a SocketIO connection and the client will receive actions as they are triggered.
+            The connection will be upgraded to a SocketIO connection and the client will receive events as they are published.
+        "200":
+          description: |
+            Polling initialized for SocketIO
+
+    post:
+      summary: Poll events and actions (SocketIO)
+      description: |
+        Poll events and actions by via SocketIO.
+      operationId: pollSIO
+      tags:
+        - SocketIO Endpoints
+      responses:
+        "200":
+          description: |
+            Polling continued from SocketIO
+
+  /socket.io/:
+    get:
+      summary: Subscribe to events and actions (SocketIO)
+      description: |
+        > Same as `/socket.io` except it comes with a trailing slash `/` - a workaround to maximize compatibility
+      operationId: subscribeSIO2
+      responses:
+        "101":
+          description: |
+            The connection will be upgraded to a SocketIO connection and the client will receive events as they are published.
+        "200":
+          description: |
+            Polling initialized for SocketIO
+
+    post:
+      summary: Poll events and actions (SocketIO)
+      description: |
+        > Same as `/socket.io` except it comes with a trailing slash `/` - a workaround to maximize compatibility
+      operationId: pollSIO2
+      responses:
+        "200":
+          description: |
+            Polling continued from SocketIO
 
 components:
   securitySchemes:
@@ -527,7 +545,14 @@ components:
       properties:
         name:
           type: string
-          description: property name
+          description: |-
+            property name
+
+            > It is recommended for a property name to be as descriptive as possible. One option is to prefix with a namespace.
+            > - If the property is source specific, prefix with source ID. For example, `local-storage:vendor`
+            > - Otherwise, prefix with `common:`. For example, `common:email`
+            >
+            > Some bad examples are `id`, `avail`, `blk`...which can be ambiguous and confusing.
           example: "local-storage:vendor"
         description:
           type: string
