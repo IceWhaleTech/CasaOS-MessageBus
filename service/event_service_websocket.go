@@ -23,9 +23,9 @@ type EventServiceWS struct {
 	subscriberChannels map[string]map[string][]chan model.Event
 }
 
-func (s *EventServiceWS) Publish(event model.Event) (*model.Event, error) {
+func (s *EventServiceWS) Publish(event model.Event) {
 	if s.inboundChannel == nil {
-		return nil, ErrInboundChannelNotFound
+		logger.Error("error when publishing event via websocket", zap.Error(ErrInboundChannelNotFound))
 	}
 
 	if event.Timestamp == 0 {
@@ -38,12 +38,13 @@ func (s *EventServiceWS) Publish(event model.Event) (*model.Event, error) {
 	case s.inboundChannel <- event:
 
 	case <-(*s.ctx).Done():
-		return nil, (*s.ctx).Err()
+		if err := (*s.ctx).Err(); err != nil {
+			logger.Info(err.Error())
+		}
+		return
 
 	default: // drop event if no one is listening
 	}
-
-	return &event, nil
 }
 
 func (s *EventServiceWS) Subscribe(sourceID string, names []string) (chan model.Event, error) {

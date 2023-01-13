@@ -18,18 +18,18 @@ type SocketIOService struct {
 	server *socketio.Server
 }
 
-func (s *SocketIOService) Publish(entity interface{}) {
-	if event, ok := entity.(model.Event); ok {
+func (s *SocketIOService) Publish(message interface{}) {
+	if event, ok := message.(model.Event); ok {
 		s.server.BroadcastToRoom("/", "event", event.Name, event)
 		return
 	}
 
-	if action, ok := entity.(model.Action); ok {
+	if action, ok := message.(model.Action); ok {
 		s.server.BroadcastToRoom("/", "action", action.Name, action)
 		return
 	}
 
-	logger.Error("unknown entity type", zap.Any("entity", entity))
+	logger.Error("unknown message type", zap.Any("message", message))
 }
 
 func (s *SocketIOService) Start(ctx *context.Context) {

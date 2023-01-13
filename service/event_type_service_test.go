@@ -90,12 +90,11 @@ func TestEventTypeService(t *testing.T) {
 			// },
 		}
 
-		actualEvent1, err := wsService.Publish(expectedEvent)
+		wsService.Publish(expectedEvent)
 		assert.NilError(t, err)
-		assert.DeepEqual(t, model.Event{SourceID: actualEvent1.SourceID, Name: actualEvent1.Name, Properties: actualEvent1.Properties}, expectedEvent)
 
-		actualEvent2, ok := <-outputChannel
+		actualEvent, ok := <-outputChannel
 		assert.Equal(t, ok, true)
-		assert.DeepEqual(t, actualEvent2, *actualEvent1)
+		assert.DeepEqual(t, model.Event{SourceID: actualEvent.SourceID, Name: actualEvent.Name, Properties: actualEvent.Properties}, expectedEvent)
 	}
 }

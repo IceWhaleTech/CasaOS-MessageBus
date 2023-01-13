@@ -22,27 +22,28 @@ type ActionServiceWS struct {
 	subscriberChannels map[string]map[string][]chan model.Action
 }
 
-func (s *ActionServiceWS) Trigger(action model.Action) (*model.Action, error) {
+func (s *ActionServiceWS) Trigger(action model.Action) {
 	if s.inboundChannel == nil {
-		return nil, ErrInboundChannelNotFound
+		logger.Error("error when triggering action via websocket", zap.Error(ErrInboundChannelNotFound))
 	}
 
 	if action.Timestamp == 0 {
 		action.Timestamp = time.Now().Unix()
 	}
 
-	// TODO - ensure properties are valid for event type
+	// TODO - ensure properties are valid for action type
 
 	select {
 	case s.inboundChannel <- action:
 
 	case <-(*s.ctx).Done():
-		return nil, (*s.ctx).Err()
+		if err := (*s.ctx).Err(); err != nil {
+			logger.Info(err.Error())
+		}
+		return
 
-	default: // drop event if no one is listening
+	default: // drop action if no one is listening
 	}
-
-	return &action, nil
 }
 
 func (s *ActionServiceWS) Subscribe(sourceID string, names []string) (chan model.Action, error) {
