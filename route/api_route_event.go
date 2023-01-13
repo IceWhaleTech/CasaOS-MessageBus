@@ -104,23 +104,18 @@ func (r *APIRoute) PublishEvent(ctx echo.Context, sourceID codegen.SourceID, nam
 	}
 
 	uuidStr := uuid.New().String()
-	event := codegen.Event{
+	event := in.EventAdapter(codegen.Event{
 		SourceID:   sourceID,
 		Name:       name,
 		Properties: properties,
 		Timestamp:  utils.Ptr(time.Now()),
 		Uuid:       &uuidStr,
-	}
+	})
 
-	go r.services.SocketIOService.Publish(in.EventAdapter(event))
+	go r.services.SocketIOService.Publish(event)
+	go r.services.EventServiceWS.Publish(event)
 
-	result, err := r.services.EventServiceWS.Publish(in.EventAdapter(event))
-	if err != nil {
-		message := err.Error()
-		return ctx.JSON(http.StatusInternalServerError, codegen.ResponseInternalServerError{Message: &message})
-	}
-
-	return ctx.JSON(http.StatusOK, out.EventAdapter(*result))
+	return ctx.JSON(http.StatusOK, out.EventAdapter(event))
 }
 
 func (r *APIRoute) SubscribeEventWS(c echo.Context, sourceID codegen.SourceID, params codegen.SubscribeEventWSParams) error {

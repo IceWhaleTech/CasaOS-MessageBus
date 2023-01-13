@@ -93,22 +93,17 @@ func (r *APIRoute) TriggerAction(c echo.Context, sourceID codegen.SourceID, name
 		return c.JSON(http.StatusBadRequest, codegen.ResponseBadRequest{Message: &message})
 	}
 
-	action := codegen.Action{
+	action := in.ActionAdapter(codegen.Action{
 		SourceID:   sourceID,
 		Name:       name,
 		Properties: properties,
 		Timestamp:  utils.Ptr(time.Now()),
-	}
+	})
 
-	go r.services.SocketIOService.Publish(in.ActionAdapter(action))
+	go r.services.SocketIOService.Publish(action)
+	go r.services.ActionServiceWS.Trigger(action)
 
-	result, err := r.services.ActionServiceWS.Trigger(in.ActionAdapter(action))
-	if err != nil {
-		message := err.Error()
-		return c.JSON(http.StatusInternalServerError, codegen.ResponseInternalServerError{Message: &message})
-	}
-
-	return c.JSON(http.StatusOK, out.ActionAdapter(*result))
+	return c.JSON(http.StatusOK, out.ActionAdapter(action))
 }
 
 func (r *APIRoute) SubscribeActionWS(c echo.Context, sourceID codegen.SourceID, params codegen.SubscribeActionWSParams) error {
