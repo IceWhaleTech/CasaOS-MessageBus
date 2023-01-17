@@ -15,13 +15,14 @@ import (
 type EventServiceWS struct {
 	typeService *EventTypeService
 
-	ctx   *context.Context
-	mutex sync.Mutex
-	stop  chan struct{}
+	ctx  *context.Context
+	stop chan struct{}
 
 	inboundChannel     chan model.Event
 	subscriberChannels map[string]map[string][]chan model.Event
 }
+
+var mutex = &sync.Mutex{}
 
 func (s *EventServiceWS) Publish(event model.Event) {
 	if s.inboundChannel == nil {
@@ -70,22 +71,28 @@ func (s *EventServiceWS) Subscribe(sourceID string, names []string) (chan model.
 		}
 	}
 
-	if s.subscriberChannels == nil {
-		s.subscriberChannels = make(map[string]map[string][]chan model.Event)
-	}
+	c := func() chan model.Event {
+		mutex.Lock()
+		defer mutex.Unlock()
 
-	if s.subscriberChannels[sourceID] == nil {
-		s.subscriberChannels[sourceID] = make(map[string][]chan model.Event)
-	}
-
-	c := make(chan model.Event, 1)
-
-	for _, name := range names {
-		if s.subscriberChannels[sourceID][name] == nil {
-			s.subscriberChannels[sourceID][name] = make([]chan model.Event, 0)
+		if s.subscriberChannels == nil {
+			s.subscriberChannels = make(map[string]map[string][]chan model.Event)
 		}
-		s.subscriberChannels[sourceID][name] = append(s.subscriberChannels[sourceID][name], c)
-	}
+
+		if s.subscriberChannels[sourceID] == nil {
+			s.subscriberChannels[sourceID] = make(map[string][]chan model.Event)
+		}
+
+		c := make(chan model.Event, 1)
+
+		for _, name := range names {
+			if s.subscriberChannels[sourceID][name] == nil {
+				s.subscriberChannels[sourceID][name] = make([]chan model.Event, 0)
+			}
+			s.subscriberChannels[sourceID][name] = append(s.subscriberChannels[sourceID][name], c)
+		}
+		return c
+	}()
 
 	return c, nil
 }
@@ -104,8 +111,8 @@ func (s *EventServiceWS) Unsubscribe(sourceID string, name string, c chan model.
 	}
 
 	for i, subscriber := range s.subscriberChannels[sourceID][name] {
-		s.mutex.Lock()
-		defer s.mutex.Unlock()
+		mutex.Lock()
+		defer mutex.Unlock()
 
 		if subscriber == c {
 			logger.Info("unsubscribing from event type", zap.String("sourceID", sourceID), zap.String("name", name), zap.Int("subscriber", i))
@@ -122,12 +129,16 @@ func (s *EventServiceWS) Unsubscribe(sourceID string, name string, c chan model.
 }
 
 func (s *EventServiceWS) Start(ctx *context.Context) {
-	s.ctx = ctx
-	s.mutex = sync.Mutex{}
+	func() {
+		mutex.Lock()
+		defer mutex.Unlock()
 
-	s.inboundChannel = make(chan model.Event)
-	s.subscriberChannels = make(map[string]map[string][]chan model.Event)
-	s.stop = make(chan struct{})
+		s.ctx = ctx
+
+		s.inboundChannel = make(chan model.Event)
+		s.subscriberChannels = make(map[string]map[string][]chan model.Event)
+		s.stop = make(chan struct{})
+	}()
 
 	defer func() {
 		if s.subscriberChannels != nil {
