@@ -1,7 +1,7 @@
 package common
 
 const (
-	MessageBusVersion     = "0.4.2"
+	MessageBusVersion     = "0.4.3"
 	MessageBusServiceName = "message-bus"
 
 	MessageBusSourceID      = "message-bus"
