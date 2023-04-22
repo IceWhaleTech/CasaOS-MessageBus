@@ -1,14 +1,16 @@
 package route
 
 import (
+	"crypto/ecdsa"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 
-	"github.com/IceWhaleTech/CasaOS-Common/utils/common_err"
+	"github.com/IceWhaleTech/CasaOS-Common/external"
 	"github.com/IceWhaleTech/CasaOS-Common/utils/jwt"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/codegen"
+	"github.com/IceWhaleTech/CasaOS-MessageBus/config"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/service"
 	"github.com/deepmap/oapi-codegen/pkg/middleware"
 	"github.com/getkin/kin-openapi/openapi3"
@@ -48,8 +50,8 @@ func NewAPIRouter(swagger *openapi3.T, services *service.Services) (http.Handler
 			return false
 		},
 		ParseTokenFunc: func(token string, c echo.Context) (interface{}, error) {
-			claims, code := jwt.Validate(token)
-			if code != common_err.SUCCESS {
+			valid, claims, err := jwt.Validate(token, func() (*ecdsa.PublicKey, error) { return external.GetPublicKey(config.CommonInfo.RuntimePath) })
+			if err != nil || !valid {
 				return nil, echo.ErrUnauthorized
 			}
 
