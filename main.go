@@ -41,6 +41,9 @@ var (
 
 	//go:embed api/message_bus/openapi.yaml
 	_docYAML string
+
+	//go:embed build/sysroot/etc/casaos/message-bus.conf.sample
+	_confSample string
 )
 
 func main() {
@@ -59,7 +62,7 @@ func main() {
 	println("build date:", date)
 
 	// initialization
-	config.InitSetup(*configFlag)
+	config.InitSetup(*configFlag, _confSample)
 
 	logger.LogInit(config.AppInfo.LogPath, config.AppInfo.LogSaveName, config.AppInfo.LogFileExt)
 
