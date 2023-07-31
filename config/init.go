@@ -1,7 +1,9 @@
 package config
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/IceWhaleTech/CasaOS-MessageBus/common"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
@@ -23,10 +25,27 @@ var (
 	ConfigFilePath string
 )
 
-func InitSetup(config string) {
+func InitSetup(config string, sample string) {
 	ConfigFilePath = MessageBusConfigFilePath
 	if len(config) > 0 {
 		ConfigFilePath = config
+	}
+
+	// create default config file if not exist
+	if _, err := os.Stat(ConfigFilePath); os.IsNotExist(err) {
+		fmt.Println("config file not exist, create it")
+		// create config file
+		file, err := os.Create(ConfigFilePath)
+		if err != nil {
+			panic(err)
+		}
+		defer file.Close()
+
+		// write default config
+		_, err = file.WriteString(sample)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	var err error

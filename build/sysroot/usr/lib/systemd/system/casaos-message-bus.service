@@ -1,6 +1,5 @@
 [Unit]
 After=casaos-gateway.service
-ConditionFileNotEmpty=/etc/casaos/message-bus.conf
 Description=CasaOS Message Bus Service
 
 [Service]
