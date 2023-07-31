@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/IceWhaleTech/CasaOS-Common/utils/constants"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/common"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 	"gopkg.in/ini.v1"
@@ -12,11 +13,11 @@ import (
 
 var (
 	CommonInfo = &model.CommonModel{
-		RuntimePath: "/var/run/casaos",
+		RuntimePath: constants.DefaultRuntimePath,
 	}
 
 	AppInfo = &model.APPModel{
-		LogPath:     "/var/log/casaos",
+		LogPath:     constants.DefaultLogPath,
 		LogSaveName: common.MessageBusServiceName,
 		LogFileExt:  "log",
 	}
