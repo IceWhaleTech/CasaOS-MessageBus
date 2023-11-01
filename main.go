@@ -1,4 +1,4 @@
-//go:generate bash -c "mkdir -p codegen && go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.12.4 -generate types,server,spec -package codegen api/message_bus/openapi.yaml > codegen/message_bus_api.go"
+//go:generate bash -c "mkdir -p codegen && go run github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@v2.0.0 -generate types,server,spec -package codegen api/message_bus/openapi.yaml > codegen/message_bus_api.go"
 
 package main
 
