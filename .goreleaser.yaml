@@ -31,9 +31,9 @@ builds:
       - amd64
   - id: casaos-message-bus-arm64
     binary: build/sysroot/usr/bin/casaos-message-bus
-    hooks:
-      post:
-        - upx --best --lzma -v --no-progress "{{ .Path }}"
+    # hooks:
+    #   post:
+    #     - upx --best --lzma -v --no-progress "{{ .Path }}"
     env:
       - CC=aarch64-linux-gnu-gcc
     ldflags:
@@ -97,9 +97,9 @@ builds:
       - amd64
   - id: casaos-message-bus-migration-tool-arm64
     binary: build/sysroot/usr/bin/casaos-message-bus-migration-tool
-    hooks:
-      post:
-        - upx --best --lzma -v --no-progress "{{ .Path }}"
+    # hooks:
+    #   post:
+    #     - upx --best --lzma -v --no-progress "{{ .Path }}"
     main: ./cmd/migration-tool
     env:
       - CC=aarch64-linux-gnu-gcc
