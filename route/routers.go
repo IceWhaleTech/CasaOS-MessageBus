@@ -12,7 +12,7 @@ import (
 	"github.com/IceWhaleTech/CasaOS-MessageBus/codegen"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/config"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/service"
-	"github.com/deepmap/oapi-codegen/pkg/middleware"
+	middleware "github.com/oapi-codegen/echo-middleware"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/labstack/echo/v4"
