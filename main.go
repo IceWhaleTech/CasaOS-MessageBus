@@ -44,6 +44,8 @@ var (
 
 	//go:embed build/sysroot/etc/casaos/message-bus.conf.sample
 	_confSample string
+
+	unixSocketPath = "/tmp/message-bus.sock"
 )
 
 func main() {
@@ -116,6 +118,14 @@ func main() {
 		panic(err)
 	}
 
+	// remove unix socket file. don't need check whether it exists or not
+	os.Remove(unixSocketPath)
+	// socket listener
+	socketListener, err := net.Listen("unix", unixSocketPath)
+	if err != nil {
+		panic(err)
+	}
+
 	// register at gateway
 	u, err := url.Parse(swagger.Servers[0].URL)
 	if err != nil {
@@ -164,8 +174,36 @@ func main() {
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	err = server.Serve(listener)
-	logger.Info("MessageBus service is stopped", zap.Error(err))
+	socketServer := &http.Server{
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
+	}
+
+	httpServerErrChan := make(chan error, 1)
+	socketServerErrChan := make(chan error, 1)
+
+	go func() {
+		err := server.Serve(listener)
+		httpServerErrChan <- err
+	}()
+
+	go func() {
+		err := socketServer.Serve(socketListener)
+		socketServerErrChan <- err
+	}()
+
+	select {
+	case err := <-httpServerErrChan:
+		if err != nil {
+			logger.Info("MessageBus service is stopped", zap.Error(err))
+			panic(err)
+		}
+	case err := <-socketServerErrChan:
+		if err != nil {
+			logger.Info("MessageBus socket service is stopped", zap.Error(err))
+			panic(err)
+		}
+	}
 }
 
 func writeAddressFile(runtimePath string, filename string, address string) (string, error) {

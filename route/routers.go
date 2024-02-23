@@ -39,6 +39,11 @@ func NewAPIRouter(swagger *openapi3.T, services *service.Services) (http.Handler
 
 	e.Use(echo_middleware.JWTWithConfig(echo_middleware.JWTConfig{
 		Skipper: func(c echo.Context) bool {
+			// skip when source is unix socket
+			if c.Request().Host == "unix" {
+				return true
+			}
+
 			if c.RealIP() == "::1" || c.RealIP() == "127.0.0.1" {
 				return true
 			}
