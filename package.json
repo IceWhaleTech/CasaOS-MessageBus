@@ -6,7 +6,6 @@
     "generate:local": "openapi-generator-cli generate -g typescript-axios -i ./api/message_bus/openapi.yaml -o ./generate",
     "generate:npx": "npx @openapitools/openapi-generator-cli generate -g typescript-axios -i ./api/message_bus/openapi.yaml -o ./generate",
     "generate:ts": "npx openapi-typescript-codegen --input ./api/message_bus/openapi.yaml --output ./generate",
-    "publish": "npm publish --access public",
     "start": "yarn generate:ts && yarn build"
   },
   "homepage": "https://github.com/IceWhaleTech/CasaOS-MessageBus#readme",
