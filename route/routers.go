@@ -34,7 +34,7 @@ func NewAPIRouter(swagger *openapi3.T, services *service.Services) (http.Handler
 	})))
 
 	e.Use(echo_middleware.Gzip())
-
+	e.Use(echo_middleware.Recover())
 	e.Use(echo_middleware.Logger())
 
 	e.Use(echo_middleware.JWTWithConfig(echo_middleware.JWTConfig{
