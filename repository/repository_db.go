@@ -3,8 +3,10 @@ package repository
 import (
 	"time"
 
+	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 	"github.com/glebarez/sqlite"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -46,6 +48,7 @@ func (r *DatabaseRepository) GetEventType(sourceID string, name string) (*model.
 	var eventType model.EventType
 
 	if err := r.db.Preload(model.PropertyTypeList).Where(&model.EventType{SourceID: sourceID, Name: name}).First(&eventType).Error; err != nil {
+		logger.Error("can't find event type", zap.String("sourceID", sourceID), zap.String("EventName", name), zap.Error(err))
 		return nil, err
 	}
 
