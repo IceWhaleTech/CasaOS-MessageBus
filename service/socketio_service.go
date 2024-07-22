@@ -67,6 +67,7 @@ func buildServer() *socketio.Server {
 	})
 
 	server.OnConnect("/", func(s socketio.Conn) error {
+		// TODO add connector info. we need to know who is connecting
 		s.SetContext("")
 		logger.Info("a socketio connection has started", zap.Any("remote_addr", s.RemoteAddr()))
 
@@ -77,10 +78,12 @@ func buildServer() *socketio.Server {
 	})
 
 	server.OnError("/", func(s socketio.Conn, e error) {
+		// TODO add connector info. we need to know who is disconnecting
 		logger.Error("error in socketio connnection", zap.Any("error", e))
 	})
 
 	server.OnDisconnect("/", func(s socketio.Conn, reason string) {
+		// TODO add connector info. we need to know who is disconnecting
 		logger.Info("a socketio connection is disconnected", zap.Any("reason", reason))
 	})
 
