@@ -15,6 +15,8 @@ type Services struct {
 	ActionServiceWS   *ActionServiceWS
 
 	SocketIOService *SocketIOService
+
+	YSKService *YSKService
 }
 
 var (
@@ -41,5 +43,6 @@ func NewServices(repository *repository.Repository) Services {
 
 		ActionTypeService: actionTypeService,
 		ActionServiceWS:   NewActionServiceWS(actionTypeService),
+		YSKService:        NewYSKService(),
 	}
 }

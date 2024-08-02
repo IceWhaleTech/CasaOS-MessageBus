@@ -723,56 +723,56 @@ components:
 
     YSKCard:
       type: object
-      # properties:
-      #   id:
-      #     type: string
-      #     example: "1234567890"
-      #   cardType:
-      #     type: string
-      #     enum:
-      #       - "task"
-      #       - "long-notice"
-      #       - "short-notice"
-      #   renderType:
-      #     type: string
-      #     enum:
-      #       - "task"
-      #       - "list-notice"
-      #       - "icon-text-notice"
-      #       - "markdown-notice"
-      #   content:
-      #     $ref: "#/components/schemas/YSKCardContent"
-      x-go-type: ysk.YSKCard
-      x-go-import:
-        name: ysk
-        path: github.com/IceWhaleTech/ZimaOS/ysk
+      properties:
+        id:
+          type: string
+          example: "1234567890"
+        cardType:
+          type: string
+          enum:
+            - "task"
+            - "long-notice"
+            - "short-notice"
+        renderType:
+          type: string
+          enum:
+            - "task"
+            - "list-notice"
+            - "icon-text-notice"
+            - "markdown-notice"
+        content:
+          $ref: "#/components/schemas/YSKCardContent"
+      # x-go-type: ysk.YSKCard
+      # x-go-import:
+      #   name: ysk
+      #   path: github.com/IceWhaleTech/ZimaOS/ysk
 
 
     YSKCardContent:
       type: object
       x-go-type: ysk.YSKCardContent
-      x-go-import:
-        name: ysk
-        path: github.com/IceWhaleTech/ZimaOS/ysk
+      # x-go-import:
+      #   name: ysk
+      #   path: github.com/IceWhaleTech/ZimaOS/ysk
 
-      # properties:
-      #   titleIcon:
-      #     $ref: "#/components/schemas/YSKCardIcon"
-      #   titleText:
-      #     type: string
-      #     example: "CasaOS"
-      #   bodyProgress:
-      #     $ref: "#/components/schemas/YSKCardProgress"
-      #   bodyIconWithText:
-      #     $ref: "#/components/schemas/YSKCardIconWithText"
-      #   bodyList:
-      #     type: array
-      #     items:
-      #       $ref: "#/components/schemas/YSKCardListItem"
-      #   footerActions:
-      #     type: array
-      #     items:
-      #       $ref: "#/components/schemas/YSKCardFooterAction"
+      properties:
+        titleIcon:
+          $ref: "#/components/schemas/YSKCardIcon"
+        titleText:
+          type: string
+          example: "CasaOS"
+        bodyProgress:
+          $ref: "#/components/schemas/YSKCardProgress"
+        bodyIconWithText:
+          $ref: "#/components/schemas/YSKCardIconWithText"
+        bodyList:
+          type: array
+          items:
+            $ref: "#/components/schemas/YSKCardListItem"
+        footerActions:
+          type: array
+          items:
+            $ref: "#/components/schemas/YSKCardFooterAction"
 
     YSKCardProgress:
       type: object
