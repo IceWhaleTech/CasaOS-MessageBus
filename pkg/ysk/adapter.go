@@ -1,5 +1,11 @@
 package ysk
 
+import (
+	"encoding/json"
+
+	"github.com/IceWhaleTech/CasaOS-MessageBus/codegen"
+)
+
 type CartType string
 
 const (
@@ -25,10 +31,10 @@ const (
 )
 
 type YSKCard struct {
-	ID         string
-	CardType   CartType
-	RenderType RenderType
-	Content    YSKCardContent
+	Id         string         `json:"id"`
+	CardType   CartType       `json:"cardType"`
+	RenderType RenderType     `json:"renderType"`
+	Content    YSKCardContent `json:"content"`
 }
 
 func (yskCard YSKCard) WithProgress(label string, progress int) YSKCard {
@@ -43,12 +49,12 @@ func (yskCard YSKCard) WithProgress(label string, progress int) YSKCard {
 }
 
 type YSKCardContent struct {
-	TitleIcon        string
-	TitleText        string
-	BodyProgress     *YSKCardProgress
-	BodyIconWithText *YSKCardIconWithText
-	BodyList         []YSKCardListItem
-	FooterActions    []YSKCardFooterAction
+	TitleIcon        string                `json:"titleIcon"`
+	TitleText        string                `json:"titleText"`
+	BodyProgress     *YSKCardProgress      `json:"bodyProgress,omitempty"`
+	BodyIconWithText *YSKCardIconWithText  `json:"bodyIconWithText,omitempty"`
+	BodyList         []YSKCardListItem     `json:"bodyList,omitempty"`
+	FooterActions    []YSKCardFooterAction `json:"footerActions,omitempty"`
 }
 
 type YSKCardProgress struct {
@@ -75,8 +81,30 @@ type YSKCardFooterAction struct {
 }
 
 type YSKCardMessageBusAction struct {
-	Key     string
-	Payload string
+	Key     string `json:"key"`
+	Payload string `json:"payload"`
 }
 
 type YSKCardIcon = string
+
+func ToCodegenYSKCard(card YSKCard) (codegen.YSKCard, error) {
+	jsonBody, err := json.Marshal(card)
+	if err != nil {
+		return codegen.YSKCard{}, err
+	}
+	var yskCard codegen.YSKCard
+	err = json.Unmarshal(jsonBody, &yskCard)
+
+	return yskCard, err
+}
+
+func FromCodegenYSKCard(card codegen.YSKCard) (YSKCard, error) {
+	jsonBody, err := json.Marshal(card)
+	if err != nil {
+		return YSKCard{}, err
+	}
+	var yskCard YSKCard
+	err = json.Unmarshal(jsonBody, &yskCard)
+
+	return yskCard, err
+}

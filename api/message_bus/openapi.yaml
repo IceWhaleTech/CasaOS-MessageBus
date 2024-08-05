@@ -752,7 +752,6 @@ components:
       #   name: ysk
       #   path: github.com/IceWhaleTech/ZimaOS/ysk
 
-
     YSKCardContent:
       type: object
       # x-go-type: ysk.YSKCardContent
