@@ -1,7 +1,9 @@
 package ysk
 
 import (
+	"database/sql/driver"
 	"encoding/json"
+	"errors"
 
 	"github.com/IceWhaleTech/CasaOS-MessageBus/codegen"
 )
@@ -40,8 +42,8 @@ type YSKCard struct {
 func (yskCard YSKCard) WithProgress(label string, progress int) YSKCard {
 	if yskCard.Content.BodyProgress != nil {
 		yskCard.Content.BodyProgress = &YSKCardProgress{
-			Label: label,
-			Value: progress,
+			Label:    label,
+			Progress: progress,
 		}
 		return yskCard
 	}
@@ -49,17 +51,30 @@ func (yskCard YSKCard) WithProgress(label string, progress int) YSKCard {
 }
 
 type YSKCardContent struct {
-	TitleIcon        string                `json:"titleIcon"`
-	TitleText        string                `json:"titleText"`
-	BodyProgress     *YSKCardProgress      `json:"bodyProgress,omitempty"`
-	BodyIconWithText *YSKCardIconWithText  `json:"bodyIconWithText,omitempty"`
-	BodyList         []YSKCardListItem     `json:"bodyList,omitempty"`
-	FooterActions    []YSKCardFooterAction `json:"footerActions,omitempty"`
+	TitleIcon        string                `json:"titleIcon" gorm:"column:title_icon"`
+	TitleText        string                `json:"titleText" gorm:"column:title_text"`
+	BodyProgress     *YSKCardProgress      `json:"bodyProgress,omitempty" gorm:"serializer:json"`
+	BodyIconWithText *YSKCardIconWithText  `json:"bodyIconWithText,omitempty" gorm:"serializer:json"`
+	BodyList         []YSKCardListItem     `json:"bodyList,omitempty" gorm:"serializer:json"`
+	FooterActions    []YSKCardFooterAction `json:"footerActions,omitempty" gorm:"serializer:json"`
+}
+
+func (p YSKCardContent) Value() (driver.Value, error) {
+	return json.Marshal(p)
+}
+
+func (p *YSKCardContent) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+
+	return json.Unmarshal(b, &p)
 }
 
 type YSKCardProgress struct {
-	Label string
-	Value int
+	Label    string
+	Progress int
 }
 
 type YSKCardIconWithText struct {

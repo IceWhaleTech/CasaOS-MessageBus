@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
-	"github.com/IceWhaleTech/CasaOS-MessageBus/codegen"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
+	"github.com/IceWhaleTech/CasaOS-MessageBus/pkg/ysk"
 	"github.com/glebarez/sqlite"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -16,15 +16,15 @@ type DatabaseRepository struct {
 	db *gorm.DB
 }
 
-func (r *DatabaseRepository) GetYSKCardList() ([]codegen.YSKCard, error) {
-	var cardList []codegen.YSKCard
+func (r *DatabaseRepository) GetYSKCardList() ([]ysk.YSKCard, error) {
+	var cardList []ysk.YSKCard
 	if err := r.db.Find(&cardList).Error; err != nil {
 		return nil, err
 	}
 	return cardList, nil
 }
 
-func (r *DatabaseRepository) UpsertYSKCard(card codegen.YSKCard) error {
+func (r *DatabaseRepository) UpsertYSKCard(card ysk.YSKCard) error {
 	return r.db.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "id"}},
 		UpdateAll: true,
@@ -148,7 +148,10 @@ func NewDatabaseRepository(databaseFilePath string) (Repository, error) {
 	c.SetMaxOpenConns(1)
 	c.SetConnMaxIdleTime(1000 * time.Second)
 
-	if err := db.AutoMigrate(&model.EventType{}, &model.ActionType{}, &model.PropertyType{}); err != nil {
+	if err := db.AutoMigrate(
+		&model.EventType{}, &model.ActionType{}, &model.PropertyType{},
+		&ysk.YSKCard{},
+	); err != nil {
 		return nil, err
 	}
 

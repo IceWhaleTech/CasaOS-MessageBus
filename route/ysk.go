@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/IceWhaleTech/CasaOS-MessageBus/codegen"
+	"github.com/IceWhaleTech/CasaOS-MessageBus/pkg/ysk"
 	"github.com/labstack/echo/v4"
 	"github.com/samber/lo"
 )
@@ -27,7 +28,14 @@ func (r *APIRoute) GetYskCard(ctx echo.Context) error {
 			Message: lo.ToPtr(err.Error()),
 		})
 	}
+
 	return ctx.JSON(http.StatusOK, codegen.ResponseGetYSKCardListOK{
-		Data: lo.ToPtr(cardList),
+		Data: lo.ToPtr(lo.Map(cardList, func(yskCard ysk.YSKCard, _ int) codegen.YSKCard {
+			card, err := ysk.ToCodegenYSKCard(yskCard)
+			if err != nil {
+				return codegen.YSKCard{}
+			}
+			return card
+		})),
 	})
 }

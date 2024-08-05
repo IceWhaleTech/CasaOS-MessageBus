@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/IceWhaleTech/CasaOS-MessageBus/codegen"
+	"github.com/IceWhaleTech/CasaOS-MessageBus/pkg/ysk"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/repository"
 )
 
@@ -17,15 +17,19 @@ func NewYSKService(repository *repository.Repository) *YSKService {
 	}
 }
 
-func (s *YSKService) YskCardList(ctx context.Context) (codegen.YSKCardList, error) {
+func (s *YSKService) YskCardList(ctx context.Context) ([]ysk.YSKCard, error) {
 	cardList, err := (*s.repository).GetYSKCardList()
 	if err != nil {
-		return codegen.YSKCardList{}, err
+		return []ysk.YSKCard{}, err
 	}
 	return cardList, nil
 }
 
-func (s *YSKService) UpsertYSKCard(ctx context.Context, yskCard codegen.YSKCard) error {
+func (s *YSKService) UpsertYSKCard(ctx context.Context, yskCard ysk.YSKCard) error {
+	// don't store short notice cards
+	if yskCard.CardType == ysk.CardTypeShortNote {
+		return nil
+	}
 	err := (*s.repository).UpsertYSKCard(yskCard)
 	return err
 }

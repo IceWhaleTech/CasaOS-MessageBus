@@ -784,12 +784,12 @@ components:
       type: object
       required:
         - "label"
-        - "value"
+        - "progress"
       properties:
         label:
           type: string
           example: "Installing jellyfin"
-        value:
+        progress:
           type: integer
           example: 50
     

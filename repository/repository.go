@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"github.com/IceWhaleTech/CasaOS-MessageBus/codegen"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
+	"github.com/IceWhaleTech/CasaOS-MessageBus/pkg/ysk"
 )
 
 type Repository interface {
@@ -16,8 +16,8 @@ type Repository interface {
 	GetActionTypesBySourceID(sourceID string) ([]model.ActionType, error)
 	GetActionType(sourceID string, name string) (*model.ActionType, error)
 
-	GetYSKCardList() ([]codegen.YSKCard, error)
-	UpsertYSKCard(card codegen.YSKCard) error
+	GetYSKCardList() ([]ysk.YSKCard, error)
+	UpsertYSKCard(card ysk.YSKCard) error
 
 	Close()
 }
