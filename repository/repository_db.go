@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
+	"github.com/IceWhaleTech/CasaOS-MessageBus/codegen"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 	"github.com/glebarez/sqlite"
 	"go.uber.org/zap"
@@ -13,6 +14,21 @@ import (
 
 type DatabaseRepository struct {
 	db *gorm.DB
+}
+
+func (r *DatabaseRepository) GetYSKCardList() ([]codegen.YSKCard, error) {
+	var cardList []codegen.YSKCard
+	if err := r.db.Find(&cardList).Error; err != nil {
+		return nil, err
+	}
+	return cardList, nil
+}
+
+func (r *DatabaseRepository) UpsertYSKCard(card codegen.YSKCard) error {
+	return r.db.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "id"}},
+		UpdateAll: true,
+	}).Create(&card).Error
 }
 
 func (r *DatabaseRepository) GetEventTypes() ([]model.EventType, error) {
