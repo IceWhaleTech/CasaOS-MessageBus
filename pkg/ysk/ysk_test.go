@@ -64,5 +64,4 @@ func TestNoticeDiskInsert(t *testing.T) {
 	}
 	err := ysk.NewYSKCard(context.Background(), DiskInsertNotice, nil)
 	assert.NilError(t, err)
-
 }
