@@ -723,6 +723,11 @@ components:
 
     YSKCard:
       type: object
+      required:
+        - "id"
+        - "cardType"
+        - "renderType"
+        - "content"
       properties:
         id:
           type: string
