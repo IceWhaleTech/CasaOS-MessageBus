@@ -45,6 +45,6 @@ func NewServices(repository *repository.Repository) Services {
 
 		ActionTypeService: actionTypeService,
 		ActionServiceWS:   NewActionServiceWS(actionTypeService),
-		YSKService:        NewYSKService(repository, eventServiceWS),
+		YSKService:        NewYSKService(repository, eventServiceWS, eventTypeService),
 	}
 }

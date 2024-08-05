@@ -5,19 +5,26 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/pkg/ysk"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/repository"
 )
 
 type YSKService struct {
-	repository *repository.Repository
-	ws         *EventServiceWS
+	repository       *repository.Repository
+	ws               *EventServiceWS
+	eventTypeService *EventTypeService
 }
 
-func NewYSKService(repository *repository.Repository, ws *EventServiceWS) *YSKService {
+func NewYSKService(
+	repository *repository.Repository,
+	ws *EventServiceWS,
+	ets *EventTypeService,
+) *YSKService {
 	return &YSKService{
-		repository: repository,
-		ws:         ws,
+		repository:       repository,
+		ws:               ws,
+		eventTypeService: ets,
 	}
 }
 
@@ -43,6 +50,17 @@ func (s *YSKService) DeleteYSKCard(ctx context.Context, id string) error {
 }
 
 func (s *YSKService) Start() {
+	// register event
+	s.eventTypeService.RegisterEventType(model.EventType{
+		SourceID: ysk.SERVICENAME,
+		Name:     "ysk:card:create",
+	})
+
+	s.eventTypeService.RegisterEventType(model.EventType{
+		SourceID: ysk.SERVICENAME,
+		Name:     "ysk:card:delete",
+	})
+
 	channel, err := s.ws.Subscribe(ysk.SERVICENAME, []string{
 		"ysk:card:create", "ysk:card:delete",
 	})
