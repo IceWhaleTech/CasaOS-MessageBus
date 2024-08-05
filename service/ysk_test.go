@@ -14,7 +14,6 @@ import (
 func setup(t *testing.T) *service.YSKService {
 	repository, err := repository.NewDatabaseRepositoryInMemory()
 	assert.NilError(t, err)
-	defer repository.Close()
 
 	yskService := service.NewYSKService(&repository)
 	return yskService
