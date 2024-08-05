@@ -11,16 +11,19 @@ import (
 	"gotest.tools/assert"
 )
 
-func setup(t *testing.T) *service.YSKService {
+func setup(t *testing.T) (*service.YSKService, func()) {
 	repository, err := repository.NewDatabaseRepositoryInMemory()
 	assert.NilError(t, err)
 
 	yskService := service.NewYSKService(&repository)
-	return yskService
+	return yskService, func() {
+		repository.Close()
+	}
 }
 
 func TestInsertAndGetCardList(t *testing.T) {
-	yskService := setup(t)
+	yskService, cleanup := setup(t)
+	defer cleanup()
 
 	cardList, err := yskService.YskCardList(context.Background())
 	assert.NilError(t, err)
@@ -51,7 +54,8 @@ func TestInsertAndGetCardList(t *testing.T) {
 }
 
 func TestInsertAllTypeCardList(t *testing.T) {
-	yskService := setup(t)
+	yskService, cleanup := setup(t)
+	defer cleanup()
 
 	cardList, err := yskService.YskCardList(context.Background())
 	assert.NilError(t, err)
