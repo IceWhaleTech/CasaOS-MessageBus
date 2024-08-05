@@ -15,7 +15,7 @@ func setup(t *testing.T) (*service.YSKService, func()) {
 	repository, err := repository.NewDatabaseRepositoryInMemory()
 	assert.NilError(t, err)
 
-	yskService := service.NewYSKService(&repository)
+	yskService := service.NewYSKService(&repository, nil)
 	return yskService, func() {
 		repository.Close()
 	}
@@ -62,7 +62,9 @@ func TestInsertAllTypeCardList(t *testing.T) {
 	assert.Equal(t, len(cardList), 0)
 
 	cardInsertQueue := []ysk.YSKCard{
-		utils.ApplicationInstallProgress, utils.DiskInsertNotice, utils.ApplicationUpdateNotice,
+		utils.ApplicationInstallProgress, utils.DiskInsertNotice,
+		// the notice is short. it didn't be stored
+		utils.ApplicationUpdateNotice,
 		utils.ApplicationInstallProgress.WithProgress("Installing LinuxServer/Jellyfin", 50), utils.ApplicationInstallProgress.WithProgress("Installing LinuxServer/Jellyfin", 55),
 		utils.ApplicationInstallProgress.WithProgress("Installing LinuxServer/Jellyfin", 80), utils.ApplicationInstallProgress.WithProgress("Installing LinuxServer/Jellyfin", 99),
 		utils.ApplicationUpdateNotice,

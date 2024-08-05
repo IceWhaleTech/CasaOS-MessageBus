@@ -36,13 +36,15 @@ func NewServices(repository *repository.Repository) Services {
 	eventTypeService := NewEventTypeService(repository)
 	actionTypeService := NewActionTypeService(repository)
 
+	eventServiceWS := NewEventServiceWS(eventTypeService)
+
 	return Services{
 		EventTypeService: eventTypeService,
-		EventServiceWS:   NewEventServiceWS(eventTypeService),
 		SocketIOService:  NewSocketIOService(),
+		EventServiceWS:   eventServiceWS,
 
 		ActionTypeService: actionTypeService,
 		ActionServiceWS:   NewActionServiceWS(actionTypeService),
-		YSKService:        NewYSKService(repository),
+		YSKService:        NewYSKService(repository, eventServiceWS),
 	}
 }
