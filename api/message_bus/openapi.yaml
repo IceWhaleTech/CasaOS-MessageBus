@@ -755,11 +755,13 @@ components:
 
     YSKCardContent:
       type: object
-      x-go-type: ysk.YSKCardContent
+      # x-go-type: ysk.YSKCardContent
       # x-go-import:
       #   name: ysk
       #   path: github.com/IceWhaleTech/ZimaOS/ysk
-
+      required:
+        - "titleIcon"
+        - "titleText"
       properties:
         titleIcon:
           $ref: "#/components/schemas/YSKCardIcon"
@@ -781,6 +783,9 @@ components:
 
     YSKCardProgress:
       type: object
+      required:
+        - "label"
+        - "value"
       properties:
         label:
           type: string
@@ -791,6 +796,9 @@ components:
     
     YSKCardIconWithText:
       type: object
+      required:
+        - "icon"
+        - "description"
       properties:
         icon:
           $ref: "#/components/schemas/YSKCardIcon"
@@ -800,6 +808,10 @@ components:
     
     YSKCardListItem:
       type: object
+      required:
+        - "icon"
+        - "description"
+        - "rightText"
       properties:
         icon:
           $ref: "#/components/schemas/YSKCardIcon"
@@ -812,6 +824,11 @@ components:
 
     YSKCardFooterAction:
       type: object
+      required:
+        - "side"
+        - "style"
+        - "text"
+        - "messageBus"
       properties:
         side:
           type: string
@@ -827,6 +844,9 @@ components:
     
     YSKCardMessageBusAction:
       type: object
+      required:
+        - "key"
+        - "payload"
       properties:
         key:
           type: string

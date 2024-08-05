@@ -30,7 +30,7 @@ func DeleteCard(ctx context.Context, cardID string, publish func(context.Context
 
 func TaskWithProgress(card codegen.YSKCard, label string, progress int) codegen.YSKCard {
 	if card.Content.BodyProgress != nil {
-		card.Content.BodyProgress = &YSKCardProgress{
+		card.Content.BodyProgress = &codegen.YSKCardProgress{
 			Label: label,
 			Value: progress,
 		}
