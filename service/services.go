@@ -15,6 +15,8 @@ type Services struct {
 	ActionServiceWS   *ActionServiceWS
 
 	SocketIOService *SocketIOService
+
+	YSKService *YSKService
 }
 
 var (
@@ -34,12 +36,15 @@ func NewServices(repository *repository.Repository) Services {
 	eventTypeService := NewEventTypeService(repository)
 	actionTypeService := NewActionTypeService(repository)
 
+	eventServiceWS := NewEventServiceWS(eventTypeService)
+
 	return Services{
 		EventTypeService: eventTypeService,
-		EventServiceWS:   NewEventServiceWS(eventTypeService),
 		SocketIOService:  NewSocketIOService(),
+		EventServiceWS:   eventServiceWS,
 
 		ActionTypeService: actionTypeService,
 		ActionServiceWS:   NewActionServiceWS(actionTypeService),
+		YSKService:        NewYSKService(repository, eventServiceWS, eventTypeService),
 	}
 }

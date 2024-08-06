@@ -34,6 +34,10 @@ tags:
     description: |-
       Endpoint paths for subscribing to events and actions via SocketIO
 
+  - name: YSK Endpoints
+    description: |-
+      Endpoint paths for YSK card via RESTful API
+
   - name: EventType
     description: |-
       <SchemaDefinition schemaRef="#/components/schemas/EventType" />
@@ -53,6 +57,11 @@ tags:
   - name: PropertyType
     description: |-
       <SchemaDefinition schemaRef="#/components/schemas/PropertyType" />
+  
+  - name: YSK methods
+    description: |-
+      methods for managing YSK card
+
 
 x-tagGroups:
   - name: Methods
@@ -61,11 +70,13 @@ x-tagGroups:
       - Event methods
       - ActionType methods
       - Action methods
+      - YSK methods
 
   - name: Endpoints
     tags:
       - WebSocket Endpoints
       - SocketIO Endpoints
+      - YSK Endpoints
 
   - name: Schemas
     tags:
@@ -337,6 +348,37 @@ paths:
         "200":
           description: |
             Polling continued from SocketIO
+  /ysk:
+    get:
+      description: |-
+        Get need display YSK card
+      operationId: getYskCard
+      tags:
+        - YSK Endpoints
+      responses:
+        "200":
+          $ref: "#/components/responses/ResponseGetYSKCardListOK"
+        "500":
+          $ref: "#/components/responses/ResponseInternalServerError"
+  /ysk/{id}:
+    delete:
+      description: |-
+        Not display YSK card
+      operationId: deleteYskCard
+      tags:
+        - YSK Endpoints
+      parameters:
+        - name: id
+          in: path
+          description: YSK card id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ResponseOK"
+        "500":
+          $ref: "#/components/responses/ResponseInternalServerError"
 
 components:
   securitySchemes:
@@ -528,6 +570,17 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Action"
+    
+    ResponseGetYSKCardListOK:
+      description: OK
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/BaseResponse"
+              - properties:
+                  data:
+                    $ref: "#/components/schemas/YSKCardList"
 
   schemas:
     BaseResponse:
@@ -668,3 +721,137 @@ components:
           type: string
           description: timestamp this action took place
           format: date-time
+    
+    YSKCardList:
+      type: array
+      items:
+        $ref: "#/components/schemas/YSKCard"
+
+    YSKCard:
+      type: object
+      required:
+        - "id"
+        - "cardType"
+        - "renderType"
+        - "content"
+      properties:
+        id:
+          type: string
+          example: "1234567890"
+        cardType:
+          type: string
+          enum:
+            - "task"
+            - "long-notice"
+            - "short-notice"
+        renderType:
+          type: string
+          enum:
+            - "task"
+            - "list-notice"
+            - "icon-text-notice"
+            - "markdown-notice"
+        content:
+          $ref: "#/components/schemas/YSKCardContent"
+
+    YSKCardContent:
+      type: object
+      required:
+        - "titleIcon"
+        - "titleText"
+      properties:
+        titleIcon:
+          $ref: "#/components/schemas/YSKCardIcon"
+        titleText:
+          type: string
+          example: "CasaOS"
+        bodyProgress:
+          $ref: "#/components/schemas/YSKCardProgress"
+        bodyIconWithText:
+          $ref: "#/components/schemas/YSKCardIconWithText"
+        bodyList:
+          type: array
+          items:
+            $ref: "#/components/schemas/YSKCardListItem"
+        footerActions:
+          type: array
+          items:
+            $ref: "#/components/schemas/YSKCardFooterAction"
+
+    YSKCardProgress:
+      type: object
+      required:
+        - "label"
+        - "progress"
+      properties:
+        label:
+          type: string
+          example: "Installing jellyfin"
+        progress:
+          type: integer
+          example: 50
+    
+    YSKCardIconWithText:
+      type: object
+      required:
+        - "icon"
+        - "description"
+      properties:
+        icon:
+          $ref: "#/components/schemas/YSKCardIcon"
+        description:
+          type: string
+          example: "CasaOS"
+    
+    YSKCardListItem:
+      type: object
+      required:
+        - "icon"
+        - "description"
+        - "rightText"
+      properties:
+        icon:
+          $ref: "#/components/schemas/YSKCardIcon"
+        description:
+          type: string
+          example: "CasaOS"
+        rightText:
+          type: string
+          example: "4 TB"
+
+    YSKCardFooterAction:
+      type: object
+      required:
+        - "side"
+        - "style"
+        - "text"
+        - "messageBus"
+      properties:
+        side:
+          type: string
+          example: "View Details"
+        style:
+          type: string
+          example: "view-details"
+        text:
+          type: string
+          example: "https://casaos.com"
+        messageBus:
+          $ref: "#/components/schemas/YSKCardMessageBusAction"
+    
+    YSKCardMessageBusAction:
+      type: object
+      required:
+        - "key"
+        - "payload"
+      properties:
+        key:
+          type: string
+          example: "open-url"
+        payload:
+          type: string
+          example: "https://casaos.com"
+    
+    YSKCardIcon:
+      type: string
+      example: "https://raw.githubusercontent.com/IceWhaleTech/logo/main/casaos/casaos_banner_twilight_blue_800px.png"
