@@ -74,14 +74,10 @@ func (s *YSKService) Start() {
 		return
 	}
 
-	err = s.UpsertYSKCard(context.Background(), utils.ApplicationInstallProgress.WithProgress("Installing Jellyfin", 20))
-	if err != nil {
-		logger.Error("failed to upsert ysk card", zap.Error(err))
-	}
-	err = s.UpsertYSKCard(context.Background(), utils.DiskInsertNotice)
-	if err != nil {
-		logger.Error("failed to upsert ysk card", zap.Error(err))
-	}
+	s.UpsertYSKCard(context.Background(), utils.ApplicationInstallProgress.WithProgress("Installing Jellyfin", 20))
+	s.UpsertYSKCard(context.Background(), utils.DiskInsertNotice)
+	s.UpsertYSKCard(context.Background(), utils.ZimaOSFileManagementNotice)
+	s.UpsertYSKCard(context.Background(), utils.ZimaOSRemoteAccessNotice)
 
 	go func() {
 		for {

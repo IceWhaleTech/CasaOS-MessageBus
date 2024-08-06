@@ -46,6 +46,60 @@ var (
 		},
 	}
 
+	ZimaOSRemoteAccessNotice = ysk.YSKCard{
+		Id:         "long-notice:remote:access",
+		CardType:   ysk.CardTypeLongNote,
+		RenderType: ysk.RenderTypeCardIconTextNotice,
+		Content: ysk.YSKCardContent{
+			TitleIcon:    "ZimaOS-Logo",
+			TitleText:    "远程访问",
+			BodyProgress: nil,
+			BodyIconWithText: &ysk.YSKCardIconWithText{
+				Icon:        "remote access",
+				Description: "通过远程访问，您可以随时随地访问您的个人主机。",
+			},
+			BodyList: nil,
+			FooterActions: []ysk.YSKCardFooterAction{
+				{
+					Side:  "Right",
+					Style: "primary",
+					Text:  "learn more",
+					MessageBus: ysk.YSKCardMessageBusAction{
+						Key:     "open:remote:access",
+						Payload: "{'type':'remote'}",
+					},
+				},
+			},
+		},
+	}
+
+	ZimaOSFileManagementNotice = ysk.YSKCard{
+		Id:         "long-notice:file:management",
+		CardType:   ysk.CardTypeLongNote,
+		RenderType: ysk.RenderTypeCardIconTextNotice,
+		Content: ysk.YSKCardContent{
+			TitleIcon:    "ZimaOS-Logo",
+			TitleText:    "文件管理",
+			BodyProgress: nil,
+			BodyIconWithText: &ysk.YSKCardIconWithText{
+				Icon:        "file management",
+				Description: "使用Files来管理分散的数据，包括备份、 云存储、 NAS 或本地网络中的其他个人数据。",
+			},
+			BodyList: nil,
+			FooterActions: []ysk.YSKCardFooterAction{
+				{
+					Side:  "Right",
+					Style: "primary",
+					Text:  "learn more",
+					MessageBus: ysk.YSKCardMessageBusAction{
+						Key:     "open:file:management",
+						Payload: "{'type':'file'}",
+					},
+				},
+			},
+		},
+	}
+
 	ApplicationUpdateNotice = ysk.YSKCard{
 		Id:         "short-notice:application:update",
 		CardType:   ysk.CardTypeShortNote,
