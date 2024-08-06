@@ -80,7 +80,7 @@ func (s *YSKService) Start() {
 					log.Println("channel closed")
 				}
 				switch event.Name {
-				case "ysk:card:create":
+				case common.EventTypeYSKCardUpsert.Name:
 					var card ysk.YSKCard
 					err := json.Unmarshal([]byte(event.Properties[common.PropertyTypeCardBody.Name]), &card)
 					if err != nil {
@@ -91,7 +91,7 @@ func (s *YSKService) Start() {
 					if err != nil {
 						logger.Error("failed to upsert ysk card", zap.Error(err))
 					}
-				case "ysk:card:delete":
+				case common.EventTypeYSKCardDelete.Name:
 					err = s.DeleteYSKCard(context.Background(), event.Properties[common.PropertyTypeCardID.Name])
 					if err != nil {
 						logger.Error("failed to delete ysk card", zap.Error(err))
