@@ -753,17 +753,9 @@ components:
             - "markdown-notice"
         content:
           $ref: "#/components/schemas/YSKCardContent"
-      # x-go-type: ysk.YSKCard
-      # x-go-import:
-      #   name: ysk
-      #   path: github.com/IceWhaleTech/ZimaOS/ysk
 
     YSKCardContent:
       type: object
-      # x-go-type: ysk.YSKCardContent
-      # x-go-import:
-      #   name: ysk
-      #   path: github.com/IceWhaleTech/ZimaOS/ysk
       required:
         - "titleIcon"
         - "titleText"
