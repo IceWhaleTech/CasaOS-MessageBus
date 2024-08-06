@@ -50,7 +50,10 @@ func TestUpdateProgress(t *testing.T) {
 	// wait for the service to start
 	time.Sleep(1 * time.Second)
 
-	err := ysk.NewYSKCard(context.Background(), utils.ApplicationInstallProgress.WithProgress(
+	err := ysk.NewYSKCard(context.Background(), utils.ApplicationInstallProgress.WithTaskContent(
+		"jellyfin logo",
+		"Installing LinuxServer/Jellyfin",
+	).WithProgress(
 		"Installing LinuxServer/Jellyfin", 25,
 	), mockPublish)
 	assert.NilError(t, err)
