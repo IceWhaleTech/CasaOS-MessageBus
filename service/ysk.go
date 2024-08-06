@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
+	"github.com/IceWhaleTech/CasaOS-MessageBus/common"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/pkg/ysk"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/repository"
@@ -55,17 +56,17 @@ func (s *YSKService) DeleteYSKCard(ctx context.Context, id string) error {
 func (s *YSKService) Start() {
 	// register event
 	s.eventTypeService.RegisterEventType(model.EventType{
-		SourceID: ysk.SERVICENAME,
-		Name:     "ysk:card:create",
+		SourceID: common.SERVICENAME,
+		Name:     common.EventTypeYSKCardUpsert.Name,
 	})
 
 	s.eventTypeService.RegisterEventType(model.EventType{
-		SourceID: ysk.SERVICENAME,
-		Name:     "ysk:card:delete",
+		SourceID: common.SERVICENAME,
+		Name:     common.EventTypeYSKCardDelete.Name,
 	})
 
-	channel, err := s.ws.Subscribe(ysk.SERVICENAME, []string{
-		"ysk:card:create", "ysk:card:delete",
+	channel, err := s.ws.Subscribe(common.SERVICENAME, []string{
+		common.EventTypeYSKCardUpsert.Name, common.EventTypeYSKCardDelete.Name,
 	})
 	if err != nil {
 		return
@@ -81,7 +82,7 @@ func (s *YSKService) Start() {
 				switch event.Name {
 				case "ysk:card:create":
 					var card ysk.YSKCard
-					err := json.Unmarshal([]byte(event.Properties["body"]), &card)
+					err := json.Unmarshal([]byte(event.Properties[common.PropertyTypeCardBody.Name]), &card)
 					if err != nil {
 						logger.Error("failed to umarshal ysk card", zap.Error(err))
 						continue
@@ -91,7 +92,7 @@ func (s *YSKService) Start() {
 						logger.Error("failed to upsert ysk card", zap.Error(err))
 					}
 				case "ysk:card:delete":
-					err = s.DeleteYSKCard(context.Background(), event.Properties["id"])
+					err = s.DeleteYSKCard(context.Background(), event.Properties[common.PropertyTypeCardID.Name])
 					if err != nil {
 						logger.Error("failed to delete ysk card", zap.Error(err))
 					}
