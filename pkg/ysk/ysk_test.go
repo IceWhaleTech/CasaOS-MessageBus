@@ -46,7 +46,7 @@ func TestUpdateProgress(t *testing.T) {
 	defer cleanup()
 	ws = wsService
 
-	yskService.Start()
+	yskService.Start(false)
 	// wait for the service to start
 	time.Sleep(1 * time.Second)
 
@@ -84,7 +84,7 @@ func TestLongAndShortNoticeInsert(t *testing.T) {
 	defer cleanup()
 	ws = wsService
 
-	yskService.Start()
+	yskService.Start(false)
 	// wait for the service to start
 	time.Sleep(1 * time.Second)
 

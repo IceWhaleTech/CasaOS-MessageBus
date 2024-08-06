@@ -88,6 +88,7 @@ func main() {
 	defer cancel()
 
 	services.Start(&ctx)
+	go services.YSKService.Start(true)
 
 	// route
 	swagger, err := codegen.GetSwagger()
