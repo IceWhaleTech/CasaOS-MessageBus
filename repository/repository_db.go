@@ -30,7 +30,9 @@ func (r *DatabaseRepository) UpsertYSKCard(card ysk.YSKCard) error {
 		UpdateAll: true,
 	}).Create(&card).Error
 }
-
+func (r *DatabaseRepository) DeleteYSKCard(id string) error {
+	return r.db.Delete(&ysk.YSKCard{Id: id}).Error
+}
 func (r *DatabaseRepository) GetEventTypes() ([]model.EventType, error) {
 	var eventTypes []model.EventType
 

@@ -3,6 +3,7 @@ package ysk_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
@@ -45,10 +46,21 @@ func TestUpdateProgress(t *testing.T) {
 	defer cleanup()
 	ws = wsService
 
+	yskService.Start()
+	// wait for the service to start
+	time.Sleep(1 * time.Second)
+
 	err := ysk.NewYSKCard(context.Background(), utils.ApplicationInstallProgress.WithProgress(
+		"Installing LinuxServer/Jellyfin", 25,
+	), mockPublish)
+	assert.NilError(t, err)
+
+	err = ysk.NewYSKCard(context.Background(), utils.ApplicationInstallProgress.WithProgress(
 		"Installing LinuxServer/Jellyfin", 50,
 	), mockPublish)
 	assert.NilError(t, err)
+
+	time.Sleep(1 * time.Second)
 
 	cards, err := yskService.YskCardList(context.Background())
 	assert.NilError(t, err)
@@ -58,12 +70,32 @@ func TestUpdateProgress(t *testing.T) {
 	err = ysk.DeleteCard(context.Background(), utils.ApplicationInstallProgress.Id, mockPublish)
 	assert.NilError(t, err)
 
+	time.Sleep(1 * time.Second)
+
 	cards, err = yskService.YskCardList(context.Background())
 	assert.NilError(t, err)
 	assert.Equal(t, len(cards), 0)
 }
 
-func TestNoticeDiskInsert(t *testing.T) {
+func TestLongAndShortNoticeInsert(t *testing.T) {
+	logger.LogInitConsoleOnly()
+
+	wsService, yskService, cleanup := setup(t)
+	defer cleanup()
+	ws = wsService
+
+	yskService.Start()
+	// wait for the service to start
+	time.Sleep(1 * time.Second)
+
 	err := ysk.NewYSKCard(context.Background(), utils.DiskInsertNotice, mockPublish)
 	assert.NilError(t, err)
+	err = ysk.NewYSKCard(context.Background(), utils.ApplicationUpdateNotice, mockPublish)
+	assert.NilError(t, err)
+
+	time.Sleep(1 * time.Second)
+
+	cards, err := yskService.YskCardList(context.Background())
+	assert.NilError(t, err)
+	assert.Equal(t, len(cards), 1)
 }

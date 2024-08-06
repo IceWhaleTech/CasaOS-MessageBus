@@ -2,12 +2,15 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 
+	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/pkg/ysk"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/repository"
+	"go.uber.org/zap"
 )
 
 type YSKService struct {
@@ -46,7 +49,7 @@ func (s *YSKService) UpsertYSKCard(ctx context.Context, yskCard ysk.YSKCard) err
 }
 
 func (s *YSKService) DeleteYSKCard(ctx context.Context, id string) error {
-	return nil
+	return (*s.repository).DeleteYSKCard(id)
 }
 
 func (s *YSKService) Start() {
@@ -75,7 +78,26 @@ func (s *YSKService) Start() {
 				if !ok {
 					log.Println("channel closed")
 				}
-				fmt.Println(event)
+				switch event.Name {
+				case "ysk:card:create":
+					var card ysk.YSKCard
+					err := json.Unmarshal([]byte(event.Properties["body"]), &card)
+					if err != nil {
+						logger.Error("failed to umarshal ysk card", zap.Error(err))
+						continue
+					}
+					err = s.UpsertYSKCard(context.Background(), card)
+					if err != nil {
+						logger.Error("failed to upsert ysk card", zap.Error(err))
+					}
+				case "ysk:card:delete":
+					err = s.DeleteYSKCard(context.Background(), event.Properties["id"])
+					if err != nil {
+						logger.Error("failed to delete ysk card", zap.Error(err))
+					}
+				default:
+					fmt.Println(event)
+				}
 			}
 		}
 	}()

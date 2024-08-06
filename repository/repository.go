@@ -18,6 +18,7 @@ type Repository interface {
 
 	GetYSKCardList() ([]ysk.YSKCard, error)
 	UpsertYSKCard(card ysk.YSKCard) error
+	DeleteYSKCard(id string) error
 
 	Close()
 }

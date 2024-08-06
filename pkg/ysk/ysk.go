@@ -22,7 +22,7 @@ func NewYSKCard(ctx context.Context, YSKCard YSKCard, publish func(context.Conte
 
 func DeleteCard(ctx context.Context, cardID string, publish func(context.Context, string, string, map[string]string)) error {
 	// do something
-	publish(ctx, SERVICENAME, "ysk:card:delete", map[string]string{"body": string(``)})
+	publish(ctx, SERVICENAME, "ysk:card:delete", map[string]string{"id": cardID})
 	return nil
 }
 
