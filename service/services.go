@@ -30,6 +30,7 @@ func (s *Services) Start(ctx *context.Context) {
 	go s.ActionServiceWS.Start(ctx)
 
 	go s.SocketIOService.Start(ctx)
+	go s.YSKService.Start()
 }
 
 func NewServices(repository *repository.Repository) Services {

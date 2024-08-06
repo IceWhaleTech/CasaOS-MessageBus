@@ -34,6 +34,10 @@ tags:
     description: |-
       Endpoint paths for subscribing to events and actions via SocketIO
 
+  - name: YSK Endpoints
+    description: |-
+      Endpoint paths for YSK card via RESTful API
+
   - name: EventType
     description: |-
       <SchemaDefinition schemaRef="#/components/schemas/EventType" />
@@ -66,11 +70,13 @@ x-tagGroups:
       - Event methods
       - ActionType methods
       - Action methods
+      - YSK methods
 
   - name: Endpoints
     tags:
       - WebSocket Endpoints
       - SocketIO Endpoints
+      - YSK Endpoints
 
   - name: Schemas
     tags:
@@ -348,7 +354,7 @@ paths:
         Get need display YSK card
       operationId: getYskCard
       tags:
-        - YSK methods
+        - YSK Endpoints
       responses:
         "200":
           $ref: "#/components/responses/ResponseGetYSKCardListOK"
@@ -360,7 +366,7 @@ paths:
         Not display YSK card
       operationId: deleteYskCard
       tags:
-        - YSK methods
+        - YSK Endpoints
       parameters:
         - name: id
           in: path

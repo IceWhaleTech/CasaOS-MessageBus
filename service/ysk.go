@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/common"
@@ -71,7 +70,17 @@ func (s *YSKService) Start() {
 		common.EventTypeYSKCardUpsert.Name, common.EventTypeYSKCardDelete.Name,
 	})
 	if err != nil {
+		logger.Error("failed to subscribe to event", zap.Error(err))
 		return
+	}
+
+	err = s.UpsertYSKCard(context.Background(), utils.ApplicationInstallProgress.WithProgress("Installing Jellyfin", 20))
+	if err != nil {
+		logger.Error("failed to upsert ysk card", zap.Error(err))
+	}
+	err = s.UpsertYSKCard(context.Background(), utils.DiskInsertNotice)
+	if err != nil {
+		logger.Error("failed to upsert ysk card", zap.Error(err))
 	}
 
 	go func() {
@@ -105,7 +114,4 @@ func (s *YSKService) Start() {
 		}
 	}()
 
-	time.Sleep(5 * time.Second)
-	s.UpsertYSKCard(context.Background(), utils.ApplicationInstallProgress.WithProgress("Installing Jellyfin", 20))
-	s.UpsertYSKCard(context.Background(), utils.DiskInsertNotice)
 }
