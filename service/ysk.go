@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/common"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/pkg/ysk"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/repository"
+	"github.com/IceWhaleTech/CasaOS-MessageBus/utils"
 	"go.uber.org/zap"
 )
 
@@ -103,4 +105,7 @@ func (s *YSKService) Start() {
 		}
 	}()
 
+	time.Sleep(5 * time.Second)
+	s.UpsertYSKCard(context.Background(), utils.ApplicationInstallProgress.WithProgress("Installing Jellyfin", 20))
+	s.UpsertYSKCard(context.Background(), utils.DiskInsertNotice)
 }
