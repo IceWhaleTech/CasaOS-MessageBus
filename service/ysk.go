@@ -75,10 +75,10 @@ func (s *YSKService) Start() {
 	}
 
 	s.UpsertYSKCard(context.Background(), utils.ApplicationInstallProgress.WithProgress("Installing Jellyfin", 20))
-	s.UpsertYSKCard(context.Background(), utils.DiskInsertNotice)
+	s.UpsertYSKCard(context.Background(), utils.ZimaOSDataStationNotice)
 	s.UpsertYSKCard(context.Background(), utils.ZimaOSFileManagementNotice)
 	s.UpsertYSKCard(context.Background(), utils.ZimaOSRemoteAccessNotice)
-
+	s.UpsertYSKCard(context.Background(), utils.DiskInsertNotice)
 	go func() {
 		for {
 			select {

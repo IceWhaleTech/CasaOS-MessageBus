@@ -88,7 +88,7 @@ func TestLongAndShortNoticeInsert(t *testing.T) {
 	// wait for the service to start
 	time.Sleep(1 * time.Second)
 
-	err := ysk.NewYSKCard(context.Background(), utils.DiskInsertNotice, mockPublish)
+	err := ysk.NewYSKCard(context.Background(), utils.ZimaOSDataStationNotice, mockPublish)
 	assert.NilError(t, err)
 	err = ysk.NewYSKCard(context.Background(), utils.ApplicationUpdateNotice, mockPublish)
 	assert.NilError(t, err)

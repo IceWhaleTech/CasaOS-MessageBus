@@ -19,7 +19,7 @@ var (
 		},
 	}
 
-	DiskInsertNotice = ysk.YSKCard{
+	ZimaOSDataStationNotice = ysk.YSKCard{
 		Id:         "long-notice:disk:insert",
 		CardType:   ysk.CardTypeLongNote,
 		RenderType: ysk.RenderTypeCardIconTextNotice,
@@ -130,6 +130,28 @@ var (
 					},
 				},
 			},
+		},
+	}
+
+	DiskInsertNotice = ysk.YSKCard{
+		Id:         "long-notice:disk:insert",
+		CardType:   ysk.CardTypeLongNote,
+		RenderType: ysk.RenderTypeCardListNotice,
+		Content: ysk.YSKCardContent{
+			TitleIcon: "disk logo",
+			TitleText: "硬盘插入",
+			BodyList: []ysk.YSKCardListItem{
+				{
+					Icon:        "disk",
+					Description: "ZimaOS-HD",
+					RightText:   "2TB",
+				}, {
+					Icon:        "disk",
+					Description: "Safe-Storage",
+					RightText:   "2TB",
+				},
+			},
+			FooterActions: nil,
 		},
 	}
 )
