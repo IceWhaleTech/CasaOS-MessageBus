@@ -17,7 +17,6 @@
 .vscode/
 dist/
 target/
-codegen/
 __debug_bin
 
 node_modules/
