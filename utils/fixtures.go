@@ -39,7 +39,7 @@ var (
 					Text:  "Learn more",
 					MessageBus: ysk.YSKCardMessageBusAction{
 						Key:     "casaos-ui/casaos-ui:app:mircoapp_communicate",
-						Payload: `{"access_id":"qWUS_pKWefbN-Bcxu3_nG","casaos_lang":"zh_cn","action":"open","peerType":"settings","name":"icewhale_settings","routerPath":"/storage"}`,
+						Payload: `{"action":"open","peerType":"settings","name":"icewhale_settings","routerPath":"/storage"}`,
 					},
 				},
 			},
@@ -66,7 +66,7 @@ var (
 					Text:  "Learn more",
 					MessageBus: ysk.YSKCardMessageBusAction{
 						Key:     "casaos-ui/casaos-ui:app:mircoapp_communicate",
-						Payload: `{"access_id":"1733L6fM4PHol8kRssFvK","casaos_lang":"zh_cn","action":"open","peerType":"settings","name":"icewhale_settings","routerPath":"/network"}`,
+						Payload: `{"action":"open","peerType":"settings","name":"icewhale_settings","routerPath":"/network"}`,
 					},
 				},
 			},
