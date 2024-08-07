@@ -92,8 +92,8 @@ var (
 					Style: "primary",
 					Text:  "Learn more",
 					MessageBus: ysk.YSKCardMessageBusAction{
-						Key:     "casaos-ui/casaos-ui:app:mircoapp_communicate",
-						Payload: "{'type':'file'}",
+						Key:     "casaos-ui:open_files",
+						Payload: `{"url": "/modules/icewhale_files/#"}`,
 					},
 				},
 			},
