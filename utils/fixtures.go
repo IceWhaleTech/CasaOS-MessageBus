@@ -25,21 +25,21 @@ var (
 		RenderType: ysk.RenderTypeCardIconTextNotice,
 		Content: ysk.YSKCardContent{
 			TitleIcon:    "ZimaOS-Logo",
-			TitleText:    "创建数据工作站",
+			TitleText:    "Build data station",
 			BodyProgress: nil,
 			BodyIconWithText: &ysk.YSKCardIconWithText{
 				Icon:        "disk",
-				Description: "通过添加硬盘驱动器或固态硬盘来增强你的个人主机，并建立自己的个人数据中心。",
+				Description: "For a data station with more storage capacity, it is recommended to add more hard drives.",
 			},
 			BodyList: nil,
 			FooterActions: []ysk.YSKCardFooterAction{
 				{
 					Side:  "Right",
 					Style: "primary",
-					Text:  "创建数据工作站",
+					Text:  "Learn more",
 					MessageBus: ysk.YSKCardMessageBusAction{
-						Key:     "open:disk:insert",
-						Payload: "{'type':'disk'}",
+						Key:     "casaos-ui/casaos-ui:app:mircoapp_communicate",
+						Payload: `{"access_id":"qWUS_pKWefbN-Bcxu3_nG","casaos_lang":"zh_cn","action":"open","peerType":"settings","name":"icewhale_settings","routerPath":"/storage"}`,
 					},
 				},
 			},
@@ -52,21 +52,21 @@ var (
 		RenderType: ysk.RenderTypeCardIconTextNotice,
 		Content: ysk.YSKCardContent{
 			TitleIcon:    "ZimaOS-Logo",
-			TitleText:    "远程访问",
+			TitleText:    "Remote Access",
 			BodyProgress: nil,
 			BodyIconWithText: &ysk.YSKCardIconWithText{
 				Icon:        "remote access",
-				Description: "通过远程访问，您可以随时随地访问您的个人主机。",
+				Description: "Configure Remote Access to access your home cloud remotely from anywhere.",
 			},
 			BodyList: nil,
 			FooterActions: []ysk.YSKCardFooterAction{
 				{
 					Side:  "Right",
 					Style: "primary",
-					Text:  "learn more",
+					Text:  "Learn more",
 					MessageBus: ysk.YSKCardMessageBusAction{
-						Key:     "open:remote:access",
-						Payload: "{'type':'remote'}",
+						Key:     "casaos-ui/casaos-ui:app:mircoapp_communicate",
+						Payload: `{"access_id":"1733L6fM4PHol8kRssFvK","casaos_lang":"zh_cn","action":"open","peerType":"settings","name":"icewhale_settings","routerPath":"/network"}`,
 					},
 				},
 			},
@@ -79,20 +79,20 @@ var (
 		RenderType: ysk.RenderTypeCardIconTextNotice,
 		Content: ysk.YSKCardContent{
 			TitleIcon:    "ZimaOS-Logo",
-			TitleText:    "文件管理",
+			TitleText:    "File Management",
 			BodyProgress: nil,
 			BodyIconWithText: &ysk.YSKCardIconWithText{
 				Icon:        "file management",
-				Description: "使用Files来管理分散的数据，包括备份、 云存储、 NAS 或本地网络中的其他个人数据。",
+				Description: "Use Files to manage your data from different locations, such as your computer, phone, netdisk and server.",
 			},
 			BodyList: nil,
 			FooterActions: []ysk.YSKCardFooterAction{
 				{
 					Side:  "Right",
 					Style: "primary",
-					Text:  "learn more",
+					Text:  "Learn more",
 					MessageBus: ysk.YSKCardMessageBusAction{
-						Key:     "open:file:management",
+						Key:     "casaos-ui/casaos-ui:app:mircoapp_communicate",
 						Payload: "{'type':'file'}",
 					},
 				},

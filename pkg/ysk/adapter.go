@@ -79,26 +79,26 @@ func (p *YSKCardContent) Scan(value interface{}) error {
 }
 
 type YSKCardProgress struct {
-	Label    string
-	Progress int
+	Label    string `json:"label"`
+	Progress int    `json:"progress"`
 }
 
 type YSKCardIconWithText struct {
-	Icon        string
-	Description string
+	Icon        string `json:"icon"`
+	Description string `json:"description"`
 }
 
 type YSKCardListItem struct {
-	Icon        string
-	Description string
-	RightText   string
+	Icon        string `json:"icon"`
+	Description string `json:"description"`
+	RightText   string `json:"rightText"`
 }
 
 type YSKCardFooterAction struct {
-	Side       ActionPosition
-	Style      string
-	Text       string
-	MessageBus YSKCardMessageBusAction
+	Side       ActionPosition          `json:"side"`
+	Style      string                  `json:"style"`
+	Text       string                  `json:"text"`
+	MessageBus YSKCardMessageBusAction `json:"messageBus"`
 }
 
 type YSKCardMessageBusAction struct {
