@@ -39,6 +39,12 @@ type YSKCard struct {
 	Content    YSKCardContent `json:"content"`
 }
 
+func (ysk YSKCard) WithTaskContent(TitleIcon, TitleText string) YSKCard {
+	ysk.Content.TitleIcon = TitleIcon
+	ysk.Content.TitleText = TitleText
+	return ysk
+}
+
 func (yskCard YSKCard) WithProgress(label string, progress int) YSKCard {
 	if yskCard.Content.BodyProgress != nil {
 		yskCard.Content.BodyProgress = &YSKCardProgress{
