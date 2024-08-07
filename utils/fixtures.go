@@ -38,8 +38,8 @@ var (
 					Style: "primary",
 					Text:  "创建数据工作站",
 					MessageBus: ysk.YSKCardMessageBusAction{
-						Key:     "open:disk:insert",
-						Payload: "{'type':'disk'}",
+						Key:     "casaos-ui/casaos-ui:app:mircoapp_communicate",
+						Payload: `{"access_id":"qWUS_pKWefbN-Bcxu3_nG","casaos_lang":"zh_cn","action":"open","peerType":"settings","name":"icewhale_settings","routerPath":"/storage"}`,
 					},
 				},
 			},
@@ -65,8 +65,8 @@ var (
 					Style: "primary",
 					Text:  "learn more",
 					MessageBus: ysk.YSKCardMessageBusAction{
-						Key:     "open:remote:access",
-						Payload: "{'type':'remote'}",
+						Key:     "casaos-ui/casaos-ui:app:mircoapp_communicate",
+						Payload: `{"access_id":"1733L6fM4PHol8kRssFvK","casaos_lang":"zh_cn","action":"open","peerType":"settings","name":"icewhale_settings","routerPath":"/network"}`,
 					},
 				},
 			},
@@ -92,7 +92,7 @@ var (
 					Style: "primary",
 					Text:  "learn more",
 					MessageBus: ysk.YSKCardMessageBusAction{
-						Key:     "open:file:management",
+						Key:     "casaos-ui/casaos-ui:app:mircoapp_communicate",
 						Payload: "{'type':'file'}",
 					},
 				},
