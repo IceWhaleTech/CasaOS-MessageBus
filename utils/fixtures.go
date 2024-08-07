@@ -34,7 +34,7 @@ var (
 			BodyList: nil,
 			FooterActions: []ysk.YSKCardFooterAction{
 				{
-					Side:  ysk.ActionPositionLeft,
+					Side:  ysk.ActionPositionRight,
 					Style: "primary",
 					Text:  "Learn more",
 					MessageBus: ysk.YSKCardMessageBusAction{
@@ -61,7 +61,7 @@ var (
 			BodyList: nil,
 			FooterActions: []ysk.YSKCardFooterAction{
 				{
-					Side:  ysk.ActionPositionLeft,
+					Side:  ysk.ActionPositionRight,
 					Style: "primary",
 					Text:  "Learn more",
 					MessageBus: ysk.YSKCardMessageBusAction{
@@ -88,7 +88,7 @@ var (
 			BodyList: nil,
 			FooterActions: []ysk.YSKCardFooterAction{
 				{
-					Side:  ysk.ActionPositionLeft,
+					Side:  ysk.ActionPositionRight,
 					Style: "primary",
 					Text:  "Learn more",
 					MessageBus: ysk.YSKCardMessageBusAction{
@@ -121,7 +121,7 @@ var (
 			},
 			FooterActions: []ysk.YSKCardFooterAction{
 				{
-					Side:  ysk.ActionPositionLeft,
+					Side:  ysk.ActionPositionRight,
 					Style: "primary",
 					Text:  "更新所有",
 					MessageBus: ysk.YSKCardMessageBusAction{
