@@ -9,11 +9,19 @@ import (
 )
 
 type CartType string
+type YSKCardIcon string
 
 const (
 	CardTypeTask      CartType = "task"
 	CardTypeLongNote  CartType = "long-notice"
 	CardTypeShortNote CartType = "short-notice"
+)
+
+const (
+	FileIcon     YSKCardIcon = "/modules/icewhale_files/appicon.svg"
+	DiskIcon     YSKCardIcon = ""
+	ZimaIcon     YSKCardIcon = ""
+	AppStoreIcon YSKCardIcon = ""
 )
 
 type RenderType string
@@ -44,7 +52,7 @@ func (ysk YSKCard) WithId(id string) YSKCard {
 	return ysk
 }
 
-func (ysk YSKCard) WithTaskContent(TitleIcon, TitleText string) YSKCard {
+func (ysk YSKCard) WithTaskContent(TitleIcon YSKCardIcon, TitleText string) YSKCard {
 	ysk.Content.TitleIcon = TitleIcon
 	ysk.Content.TitleText = TitleText
 	return ysk
@@ -62,7 +70,7 @@ func (yskCard YSKCard) WithProgress(label string, progress int) YSKCard {
 }
 
 type YSKCardContent struct {
-	TitleIcon        string                `json:"titleIcon" gorm:"column:title_icon"`
+	TitleIcon        YSKCardIcon           `json:"titleIcon" gorm:"column:title_icon"`
 	TitleText        string                `json:"titleText" gorm:"column:title_text"`
 	BodyProgress     *YSKCardProgress      `json:"bodyProgress,omitempty" gorm:"serializer:json"`
 	BodyIconWithText *YSKCardIconWithText  `json:"bodyIconWithText,omitempty" gorm:"serializer:json"`
@@ -89,14 +97,14 @@ type YSKCardProgress struct {
 }
 
 type YSKCardIconWithText struct {
-	Icon        string `json:"icon"`
-	Description string `json:"description"`
+	Icon        YSKCardIcon `json:"icon"`
+	Description string      `json:"description"`
 }
 
 type YSKCardListItem struct {
-	Icon        string `json:"icon"`
-	Description string `json:"description"`
-	RightText   string `json:"rightText"`
+	Icon        YSKCardIcon `json:"icon"`
+	Description string      `json:"description"`
+	RightText   string      `json:"rightText"`
 }
 
 type YSKCardFooterAction struct {
@@ -110,8 +118,6 @@ type YSKCardMessageBusAction struct {
 	Key     string `json:"key"`
 	Payload string `json:"payload"`
 }
-
-type YSKCardIcon = string
 
 func ToCodegenYSKCard(card YSKCard) (codegen.YSKCard, error) {
 	jsonBody, err := json.Marshal(card)

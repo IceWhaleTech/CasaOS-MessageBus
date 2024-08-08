@@ -78,11 +78,11 @@ var (
 		CardType:   ysk.CardTypeLongNote,
 		RenderType: ysk.RenderTypeCardIconTextNotice,
 		Content: ysk.YSKCardContent{
-			TitleIcon:    "ZimaOS-Logo",
+			TitleIcon:    ysk.FileIcon,
 			TitleText:    "File Management",
 			BodyProgress: nil,
 			BodyIconWithText: &ysk.YSKCardIconWithText{
-				Icon:        "file management",
+				Icon:        ysk.FileIcon,
 				Description: "Use Files to manage your data from different locations, such as your computer, phone, netdisk and server.",
 			},
 			BodyList: nil,
