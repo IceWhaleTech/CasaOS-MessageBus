@@ -39,6 +39,11 @@ type YSKCard struct {
 	Content    YSKCardContent `json:"content"`
 }
 
+func (ysk YSKCard) WithId(id string) YSKCard {
+	ysk.Id = id
+	return ysk
+}
+
 func (ysk YSKCard) WithTaskContent(TitleIcon, TitleText string) YSKCard {
 	ysk.Content.TitleIcon = TitleIcon
 	ysk.Content.TitleText = TitleText
