@@ -10,7 +10,7 @@ var (
 		CardType:   ysk.CardTypeTask,
 		RenderType: ysk.RenderTypeCardTask,
 		Content: ysk.YSKCardContent{
-			TitleIcon:        "jellyfin logo",
+			TitleIcon:        ysk.AppStoreIcon,
 			TitleText:        "APP Installing",
 			BodyProgress:     &ysk.YSKCardProgress{},
 			BodyIconWithText: nil,
@@ -24,22 +24,22 @@ var (
 		CardType:   ysk.CardTypeLongNote,
 		RenderType: ysk.RenderTypeCardIconTextNotice,
 		Content: ysk.YSKCardContent{
-			TitleIcon:    "ZimaOS-Logo",
+			TitleIcon:    ysk.ZimaIcon,
 			TitleText:    "Build data station",
 			BodyProgress: nil,
 			BodyIconWithText: &ysk.YSKCardIconWithText{
-				Icon:        "disk",
+				Icon:        ysk.DiskIcon,
 				Description: "For a data station with more storage capacity, it is recommended to add more hard drives.",
 			},
 			BodyList: nil,
 			FooterActions: []ysk.YSKCardFooterAction{
 				{
-					Side:  ysk.ActionPositionLeft,
+					Side:  ysk.ActionPositionRight,
 					Style: "primary",
 					Text:  "Learn more",
 					MessageBus: ysk.YSKCardMessageBusAction{
 						Key:     "casaos-ui/casaos-ui:app:mircoapp_communicate",
-						Payload: `{"access_id":"qWUS_pKWefbN-Bcxu3_nG","casaos_lang":"zh_cn","action":"open","peerType":"settings","name":"icewhale_settings","routerPath":"/storage"}`,
+						Payload: `{"action":"open","peerType":"settings","name":"icewhale_settings","routerPath":"/storage"}`,
 					},
 				},
 			},
@@ -51,22 +51,22 @@ var (
 		CardType:   ysk.CardTypeLongNote,
 		RenderType: ysk.RenderTypeCardIconTextNotice,
 		Content: ysk.YSKCardContent{
-			TitleIcon:    "ZimaOS-Logo",
+			TitleIcon:    ysk.ZimaIcon,
 			TitleText:    "Remote Access",
 			BodyProgress: nil,
 			BodyIconWithText: &ysk.YSKCardIconWithText{
-				Icon:        "remote access",
+				Icon:        ysk.ZimaIcon,
 				Description: "Configure Remote Access to access your home cloud remotely from anywhere.",
 			},
 			BodyList: nil,
 			FooterActions: []ysk.YSKCardFooterAction{
 				{
-					Side:  ysk.ActionPositionLeft,
+					Side:  ysk.ActionPositionRight,
 					Style: "primary",
 					Text:  "Learn more",
 					MessageBus: ysk.YSKCardMessageBusAction{
 						Key:     "casaos-ui/casaos-ui:app:mircoapp_communicate",
-						Payload: `{"access_id":"1733L6fM4PHol8kRssFvK","casaos_lang":"zh_cn","action":"open","peerType":"settings","name":"icewhale_settings","routerPath":"/network"}`,
+						Payload: `{"action":"open","peerType":"settings","name":"icewhale_settings","routerPath":"/network"}`,
 					},
 				},
 			},
@@ -78,22 +78,22 @@ var (
 		CardType:   ysk.CardTypeLongNote,
 		RenderType: ysk.RenderTypeCardIconTextNotice,
 		Content: ysk.YSKCardContent{
-			TitleIcon:    "ZimaOS-Logo",
+			TitleIcon:    ysk.FileIcon,
 			TitleText:    "File Management",
 			BodyProgress: nil,
 			BodyIconWithText: &ysk.YSKCardIconWithText{
-				Icon:        "file management",
+				Icon:        ysk.FileIcon,
 				Description: "Use Files to manage your data from different locations, such as your computer, phone, netdisk and server.",
 			},
 			BodyList: nil,
 			FooterActions: []ysk.YSKCardFooterAction{
 				{
-					Side:  ysk.ActionPositionLeft,
+					Side:  ysk.ActionPositionRight,
 					Style: "primary",
 					Text:  "Learn more",
 					MessageBus: ysk.YSKCardMessageBusAction{
-						Key:     "casaos-ui/casaos-ui:app:mircoapp_communicate",
-						Payload: "{'type':'file'}",
+						Key:     "casaos-ui:open_files",
+						Payload: `{"url": "/modules/icewhale_files/#"}`,
 					},
 				},
 			},
@@ -105,7 +105,7 @@ var (
 		CardType:   ysk.CardTypeShortNote,
 		RenderType: ysk.RenderTypeCardListNotice,
 		Content: ysk.YSKCardContent{
-			TitleIcon: "app store logo",
+			TitleIcon: ysk.AppStoreIcon,
 			TitleText: "有应用更新",
 			BodyList: []ysk.YSKCardListItem{
 				{
@@ -121,7 +121,7 @@ var (
 			},
 			FooterActions: []ysk.YSKCardFooterAction{
 				{
-					Side:  ysk.ActionPositionLeft,
+					Side:  ysk.ActionPositionRight,
 					Style: "primary",
 					Text:  "更新所有",
 					MessageBus: ysk.YSKCardMessageBusAction{
@@ -138,20 +138,30 @@ var (
 		CardType:   ysk.CardTypeLongNote,
 		RenderType: ysk.RenderTypeCardListNotice,
 		Content: ysk.YSKCardContent{
-			TitleIcon: "disk logo",
-			TitleText: "硬盘插入",
+			TitleIcon: ysk.ZimaIcon,
+			TitleText: "Found a new device",
 			BodyList: []ysk.YSKCardListItem{
 				{
-					Icon:        "disk",
+					Icon:        ysk.StorageIcon,
 					Description: "ZimaOS-HD",
 					RightText:   "2TB",
 				}, {
-					Icon:        "disk",
+					Icon:        ysk.StorageIcon,
 					Description: "Safe-Storage",
 					RightText:   "2TB",
 				},
 			},
-			FooterActions: nil,
+			FooterActions: []ysk.YSKCardFooterAction{
+				{
+					Side:  ysk.ActionPositionRight,
+					Style: "primary",
+					Text:  "Manage",
+					MessageBus: ysk.YSKCardMessageBusAction{
+						Key:     "casaos-ui/casaos-ui:app:mircoapp_communicate",
+						Payload: `{"action":"open","peerType":"settings","name":"icewhale_settings","routerPath":"/storage"}`,
+					},
+				},
+			},
 		},
 	}
 )
