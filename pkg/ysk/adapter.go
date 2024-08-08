@@ -19,9 +19,10 @@ const (
 
 const (
 	FileIcon     YSKCardIcon = "/modules/icewhale_files/appicon.svg"
-	DiskIcon     YSKCardIcon = ""
-	ZimaIcon     YSKCardIcon = ""
-	AppStoreIcon YSKCardIcon = ""
+	DiskIcon     YSKCardIcon = "/src/assets/img/storage/disk.png"
+	ZimaIcon     YSKCardIcon = "/src/assets/img/zima.svg"
+	StorageIcon  YSKCardIcon = "/src/assets/img/storage/storage.svg"
+	AppStoreIcon YSKCardIcon = "/src/assets/img/welcome/appstore.svg"
 )
 
 type RenderType string

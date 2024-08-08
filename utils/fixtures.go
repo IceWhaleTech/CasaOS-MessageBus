@@ -10,7 +10,7 @@ var (
 		CardType:   ysk.CardTypeTask,
 		RenderType: ysk.RenderTypeCardTask,
 		Content: ysk.YSKCardContent{
-			TitleIcon:        "jellyfin logo",
+			TitleIcon:        ysk.AppStoreIcon,
 			TitleText:        "APP Installing",
 			BodyProgress:     &ysk.YSKCardProgress{},
 			BodyIconWithText: nil,
@@ -24,11 +24,11 @@ var (
 		CardType:   ysk.CardTypeLongNote,
 		RenderType: ysk.RenderTypeCardIconTextNotice,
 		Content: ysk.YSKCardContent{
-			TitleIcon:    "ZimaOS-Logo",
+			TitleIcon:    ysk.ZimaIcon,
 			TitleText:    "Build data station",
 			BodyProgress: nil,
 			BodyIconWithText: &ysk.YSKCardIconWithText{
-				Icon:        "disk",
+				Icon:        ysk.DiskIcon,
 				Description: "For a data station with more storage capacity, it is recommended to add more hard drives.",
 			},
 			BodyList: nil,
@@ -51,11 +51,11 @@ var (
 		CardType:   ysk.CardTypeLongNote,
 		RenderType: ysk.RenderTypeCardIconTextNotice,
 		Content: ysk.YSKCardContent{
-			TitleIcon:    "ZimaOS-Logo",
+			TitleIcon:    ysk.ZimaIcon,
 			TitleText:    "Remote Access",
 			BodyProgress: nil,
 			BodyIconWithText: &ysk.YSKCardIconWithText{
-				Icon:        "remote access",
+				Icon:        ysk.ZimaIcon,
 				Description: "Configure Remote Access to access your home cloud remotely from anywhere.",
 			},
 			BodyList: nil,
@@ -105,7 +105,7 @@ var (
 		CardType:   ysk.CardTypeShortNote,
 		RenderType: ysk.RenderTypeCardListNotice,
 		Content: ysk.YSKCardContent{
-			TitleIcon: "app store logo",
+			TitleIcon: ysk.AppStoreIcon,
 			TitleText: "有应用更新",
 			BodyList: []ysk.YSKCardListItem{
 				{
@@ -138,20 +138,30 @@ var (
 		CardType:   ysk.CardTypeLongNote,
 		RenderType: ysk.RenderTypeCardListNotice,
 		Content: ysk.YSKCardContent{
-			TitleIcon: "disk logo",
-			TitleText: "硬盘插入",
+			TitleIcon: ysk.ZimaIcon,
+			TitleText: "Found a new device",
 			BodyList: []ysk.YSKCardListItem{
 				{
-					Icon:        "disk",
+					Icon:        ysk.StorageIcon,
 					Description: "ZimaOS-HD",
 					RightText:   "2TB",
 				}, {
-					Icon:        "disk",
+					Icon:        ysk.StorageIcon,
 					Description: "Safe-Storage",
 					RightText:   "2TB",
 				},
 			},
-			FooterActions: nil,
+			FooterActions: []ysk.YSKCardFooterAction{
+				{
+					Side:  ysk.ActionPositionRight,
+					Style: "primary",
+					Text:  "Manage",
+					MessageBus: ysk.YSKCardMessageBusAction{
+						Key:     "casaos-ui/casaos-ui:app:mircoapp_communicate",
+						Payload: `{"action":"open","peerType":"settings","name":"icewhale_settings","routerPath":"/storage"}`,
+					},
+				},
+			},
 		},
 	}
 )
