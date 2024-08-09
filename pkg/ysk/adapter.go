@@ -70,6 +70,11 @@ func (yskCard YSKCard) WithProgress(label string, progress int) YSKCard {
 	return yskCard
 }
 
+func (yskCard YSKCard) WithList(params []YSKCardListItem) YSKCard {
+	yskCard.Content.BodyList = params
+	return yskCard
+}
+
 type YSKCardContent struct {
 	TitleIcon        YSKCardIcon           `json:"titleIcon" gorm:"column:title_icon"`
 	TitleText        string                `json:"titleText" gorm:"column:title_text"`
