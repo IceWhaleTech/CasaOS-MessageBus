@@ -57,11 +57,9 @@ func (s *YSKService) DeleteYSKCard(ctx context.Context, id string) error {
 func (s *YSKService) Start(init bool) {
 	if init {
 
-		s.UpsertYSKCard(context.Background(), utils.ApplicationInstallProgress.WithProgress("Installing Jellyfin", 20))
 		s.UpsertYSKCard(context.Background(), utils.ZimaOSDataStationNotice)
 		s.UpsertYSKCard(context.Background(), utils.ZimaOSFileManagementNotice)
 		s.UpsertYSKCard(context.Background(), utils.ZimaOSRemoteAccessNotice)
-		s.UpsertYSKCard(context.Background(), utils.DiskInsertNotice)
 	}
 	// register event
 	s.eventTypeService.RegisterEventType(model.EventType{
