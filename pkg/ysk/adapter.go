@@ -75,6 +75,20 @@ func (yskCard YSKCard) WithList(params []YSKCardListItem) YSKCard {
 	return yskCard
 }
 
+func (yskCard YSKCard) WithIconText(icon YSKCardIcon, description string) YSKCard {
+	yskCard.Content.BodyIconWithText = &YSKCardIconWithText{
+		Icon:        icon,
+		Description: description,
+	}
+	return yskCard
+}
+
+// replace the all old action
+func (yskCard YSKCard) WithFooterActions(actions []YSKCardFooterAction) YSKCard {
+	yskCard.Content.FooterActions = actions
+	return yskCard
+}
+
 // it will replace the old action by same side and style
 func (YSKCard YSKCard) UpsertFooterAction(action YSKCardFooterAction) YSKCard {
 	for i, a := range YSKCard.Content.FooterActions {
