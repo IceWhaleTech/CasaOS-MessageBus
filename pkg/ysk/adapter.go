@@ -75,6 +75,16 @@ func (yskCard YSKCard) WithList(params []YSKCardListItem) YSKCard {
 	return yskCard
 }
 
+// it will replace the old action by same side and style
+func (YSKCard YSKCard) UpsertFooterAction(action YSKCardFooterAction) YSKCard {
+	for i, a := range YSKCard.Content.FooterActions {
+		if a.Side == action.Side && a.Style == action.Style {
+			YSKCard.Content.FooterActions[i] = action
+		}
+	}
+	return YSKCard
+}
+
 type YSKCardContent struct {
 	TitleIcon        YSKCardIcon           `json:"titleIcon" gorm:"column:title_icon"`
 	TitleText        string                `json:"titleText" gorm:"column:title_text"`
