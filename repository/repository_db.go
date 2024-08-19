@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
-	"github.com/IceWhaleTech/CasaOS-MessageBus/config"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/pkg/ysk"
 	"github.com/glebarez/sqlite"
@@ -143,12 +142,11 @@ func NewDatabaseRepositoryInMemory() (Repository, error) {
 }
 
 func NewDatabaseRepository(databaseFilePath string) (Repository, error) {
-	dbPath := filepath.Join(config.AppInfo.DBPath, "db")
 	// mkdir dbpath, 777 is copied from zimaos-local-storage
-	if err := os.MkdirAll(filepath.Dir(dbPath), 0o777); err != nil {
+	if err := os.MkdirAll(filepath.Dir(databaseFilePath), 0o777); err != nil {
 		return nil, err
 	}
-	db, err := gorm.Open(sqlite.Open(filepath.Join(dbPath, "message-bus.db")))
+	db, err := gorm.Open(sqlite.Open(databaseFilePath))
 	if err != nil {
 		return nil, err
 	}
