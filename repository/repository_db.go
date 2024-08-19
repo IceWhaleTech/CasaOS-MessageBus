@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"os"
 	"path/filepath"
 	"time"
 
@@ -142,7 +143,12 @@ func NewDatabaseRepositoryInMemory() (Repository, error) {
 }
 
 func NewDatabaseRepository(databaseFilePath string) (Repository, error) {
-	db, err := gorm.Open(sqlite.Open(filepath.Join(config.AppInfo.DBPath, "db", "message-bus.db")))
+	dbPath := filepath.Join(config.AppInfo.DBPath, "db")
+	// mkdir dbpath, 777 is copy by zimaos-local-storage
+	if err := os.MkdirAll(filepath.Dir(dbPath), 0o777); err != nil {
+		return nil, err
+	}
+	db, err := gorm.Open(sqlite.Open(filepath.Join(dbPath, "message-bus.db")))
 	if err != nil {
 		return nil, err
 	}
