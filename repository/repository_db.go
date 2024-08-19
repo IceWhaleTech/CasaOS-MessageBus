@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"path/filepath"
 	"time"
 
 	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
+	"github.com/IceWhaleTech/CasaOS-MessageBus/config"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/pkg/ysk"
 	"github.com/glebarez/sqlite"
@@ -140,7 +142,7 @@ func NewDatabaseRepositoryInMemory() (Repository, error) {
 }
 
 func NewDatabaseRepository(databaseFilePath string) (Repository, error) {
-	db, err := gorm.Open(sqlite.Open(databaseFilePath))
+	db, err := gorm.Open(sqlite.Open(filepath.Join(config.AppInfo.DBPath, "db", "message-bus.db")))
 	if err != nil {
 		return nil, err
 	}
