@@ -38,6 +38,10 @@ func (s *YSKService) YskCardList(ctx context.Context) ([]ysk.YSKCard, error) {
 	if err != nil {
 		return []ysk.YSKCard{}, err
 	}
+	// reverse card list
+	for i, j := 0, len(cardList)-1; i < j; i, j = i+1, j-1 {
+		cardList[i], cardList[j] = cardList[j], cardList[i]
+	}
 	return cardList, nil
 }
 
