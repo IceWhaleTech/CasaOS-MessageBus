@@ -144,7 +144,7 @@ func NewDatabaseRepositoryInMemory() (Repository, error) {
 
 func NewDatabaseRepository(databaseFilePath string) (Repository, error) {
 	dbPath := filepath.Join(config.AppInfo.DBPath, "db")
-	// mkdir dbpath, 777 is copy by zimaos-local-storage
+	// mkdir dbpath, 777 is copied from zimaos-local-storage
 	if err := os.MkdirAll(filepath.Dir(dbPath), 0o777); err != nil {
 		return nil, err
 	}
