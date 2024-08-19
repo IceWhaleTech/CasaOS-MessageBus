@@ -73,7 +73,7 @@ func main() {
 		panic(err)
 	}
 
-	databaseFilePath := filepath.Join(config.CommonInfo.RuntimePath, "message-bus.db")
+	databaseFilePath := filepath.Join(config.AppInfo.DBPath, "db", "message-bus.db")
 
 	repository, err := repository.NewDatabaseRepository(databaseFilePath)
 	if err != nil {

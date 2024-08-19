@@ -19,6 +19,7 @@ var (
 	AppInfo = &model.APPModel{
 		LogPath:     constants.DefaultLogPath,
 		LogSaveName: common.MessageBusServiceName,
+		DBPath:      constants.DefaultDataPath,
 		LogFileExt:  "log",
 	}
 

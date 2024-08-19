@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
@@ -140,6 +142,10 @@ func NewDatabaseRepositoryInMemory() (Repository, error) {
 }
 
 func NewDatabaseRepository(databaseFilePath string) (Repository, error) {
+	// mkdir dbpath, 777 is copied from zimaos-local-storage
+	if err := os.MkdirAll(filepath.Dir(databaseFilePath), 0o777); err != nil {
+		return nil, err
+	}
 	db, err := gorm.Open(sqlite.Open(databaseFilePath))
 	if err != nil {
 		return nil, err
