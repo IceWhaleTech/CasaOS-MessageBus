@@ -20,5 +20,9 @@ type Repository interface {
 	UpsertYSKCard(card ysk.YSKCard) error
 	DeleteYSKCard(id string) error
 
+	InsertEvent(event model.Event) error
+	GetEvent(id string) (*model.Event, error)
+	GetEvents(sourceID string, eventType string) ([]model.Event, error)
+
 	Close()
 }

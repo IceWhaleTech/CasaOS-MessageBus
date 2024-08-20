@@ -18,6 +18,30 @@ type DatabaseRepository struct {
 	db *gorm.DB
 }
 
+func (r *DatabaseRepository) GetEvent(id string) (*model.Event, error) {
+	var event model.Event
+	if err := r.db.Where("id = ?", id).First(&event).Error; err != nil {
+		return nil, err
+	}
+	return &event, nil
+}
+
+func (r *DatabaseRepository) GetEvents(sourceID string, eventType string) ([]model.Event, error) {
+	var events []model.Event
+	query := r.db.Where("source_id = ?", sourceID)
+	if eventType != "" {
+		query = query.Where("event_type = ?", eventType)
+	}
+	if err := query.Find(&events).Error; err != nil {
+		return nil, err
+	}
+	return events, nil
+}
+
+func (r *DatabaseRepository) InsertEvent(event model.Event) error {
+	return r.db.Create(&event).Error
+}
+
 func (r *DatabaseRepository) GetYSKCardList() ([]ysk.YSKCard, error) {
 	var cardList []ysk.YSKCard
 	if err := r.db.Find(&cardList).Error; err != nil {
