@@ -15,25 +15,50 @@ import (
 )
 
 type DatabaseRepository struct {
-	db *gorm.DB
+	db        *gorm.DB
+	persistDB *gorm.DB
+}
+
+func (r *DatabaseRepository) GetEvent(id string) (*model.Event, error) {
+	var event model.Event
+	if err := r.db.Where("id = ?", id).First(&event).Error; err != nil {
+		return nil, err
+	}
+	return &event, nil
+}
+
+func (r *DatabaseRepository) GetEvents(sourceID string, eventType string) ([]model.Event, error) {
+	var events []model.Event
+	query := r.db.Where("source_id = ?", sourceID)
+	if eventType != "" {
+		query = query.Where("event_type = ?", eventType)
+	}
+	if err := query.Find(&events).Error; err != nil {
+		return nil, err
+	}
+	return events, nil
+}
+
+func (r *DatabaseRepository) InsertEvent(event model.Event) error {
+	return r.db.Create(&event).Error
 }
 
 func (r *DatabaseRepository) GetYSKCardList() ([]ysk.YSKCard, error) {
 	var cardList []ysk.YSKCard
-	if err := r.db.Find(&cardList).Error; err != nil {
+	if err := r.persistDB.Find(&cardList).Error; err != nil {
 		return nil, err
 	}
 	return cardList, nil
 }
 
 func (r *DatabaseRepository) UpsertYSKCard(card ysk.YSKCard) error {
-	return r.db.Clauses(clause.OnConflict{
+	return r.persistDB.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "id"}},
 		UpdateAll: true,
 	}).Create(&card).Error
 }
 func (r *DatabaseRepository) DeleteYSKCard(id string) error {
-	return r.db.Delete(&ysk.YSKCard{Id: id}).Error
+	return r.persistDB.Delete(&ysk.YSKCard{Id: id}).Error
 }
 func (r *DatabaseRepository) GetEventTypes() ([]model.EventType, error) {
 	var eventTypes []model.EventType
@@ -141,7 +166,7 @@ func NewDatabaseRepositoryInMemory() (Repository, error) {
 	return NewDatabaseRepository("file::memory:?cache=shared")
 }
 
-func NewDatabaseRepository(databaseFilePath string) (Repository, error) {
+func NewDatabaseRepository(databaseFilePath string, persistDatabaseFilePath string) (Repository, error) {
 	// mkdir dbpath, 777 is copied from zimaos-local-storage
 	if err := os.MkdirAll(filepath.Dir(databaseFilePath), 0o777); err != nil {
 		return nil, err
@@ -150,20 +175,33 @@ func NewDatabaseRepository(databaseFilePath string) (Repository, error) {
 	if err != nil {
 		return nil, err
 	}
+	persistDB, err := gorm.Open(sqlite.Open(persistDatabaseFilePath))
+	if err != nil {
+		return nil, err
+	}
 
-	c, _ := db.DB()
-	c.SetMaxIdleConns(10)
-	c.SetMaxOpenConns(1)
-	c.SetConnMaxIdleTime(1000 * time.Second)
+	for _, db := range []*gorm.DB{db, persistDB} {
+		if c, err := db.DB(); err == nil {
+			c.SetMaxIdleConns(10)
+			c.SetMaxOpenConns(1)
+			c.SetConnMaxIdleTime(1000 * time.Second)
+		}
+	}
 
 	if err := db.AutoMigrate(
 		&model.EventType{}, &model.ActionType{}, &model.PropertyType{},
+	); err != nil {
+		return nil, err
+	}
+
+	if err := persistDB.AutoMigrate(
 		&ysk.YSKCard{},
 	); err != nil {
 		return nil, err
 	}
 
 	return &DatabaseRepository{
-		db: db,
+		db:        db,
+		persistDB: persistDB,
 	}, nil
 }
