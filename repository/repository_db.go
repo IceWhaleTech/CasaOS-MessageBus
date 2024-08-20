@@ -163,7 +163,7 @@ func GetType[T any](db *gorm.DB, sourceID string, name string) (*T, error) {
 }
 
 func NewDatabaseRepositoryInMemory() (Repository, error) {
-	return NewDatabaseRepository("file::memory:?cache=shared")
+	return NewDatabaseRepository("file::memory:?cache=shared", "file::memory:?cache=shared")
 }
 
 func NewDatabaseRepository(databaseFilePath string, persistDatabaseFilePath string) (Repository, error) {
