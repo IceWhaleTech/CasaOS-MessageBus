@@ -117,9 +117,10 @@ func (r *DatabaseRepository) GetActionType(sourceID string, name string) (*model
 }
 
 func (r *DatabaseRepository) Close() {
-	sqlDB, err := r.db.DB()
-	if err == nil {
-		sqlDB.Close()
+	for _, db := range []*gorm.DB{r.db, r.persistDB} {
+		if sqlDB, err := db.DB(); err == nil {
+			sqlDB.Close()
+		}
 	}
 }
 
