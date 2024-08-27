@@ -34,7 +34,7 @@ func (r *DatabaseRepository) UpsertYSKCard(card ysk.YSKCard) error {
 	}).Create(&card).Error
 }
 func (r *DatabaseRepository) DeleteYSKCard(id string) error {
-	return r.persistDB.Delete(&ysk.YSKCard{Id: id}).Error
+	return r.persistDB.Where("id LIKE ?", id+"%").Delete(&ysk.YSKCard{}).Error
 }
 func (r *DatabaseRepository) GetEventTypes() ([]model.EventType, error) {
 	var eventTypes []model.EventType
