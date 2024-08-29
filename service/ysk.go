@@ -38,11 +38,6 @@ func (s *YSKService) YskCardList(ctx context.Context) ([]ysk.YSKCard, error) {
 	if err != nil {
 		return []ysk.YSKCard{}, err
 	}
-	// reverse card list
-	// make the latest card be the first one
-	for i, j := 0, len(cardList)-1; i < j; i, j = i+1, j-1 {
-		cardList[i], cardList[j] = cardList[j], cardList[i]
-	}
 	return cardList, nil
 }
 
@@ -115,5 +110,4 @@ func (s *YSKService) Start(init bool) {
 			}
 		}
 	}()
-
 }

@@ -44,8 +44,12 @@ func TestInsertAndGetCardList(t *testing.T) {
 
 	for _, card := range cardList {
 		if card.Id == utils.ApplicationInstallProgress.Id {
+			utils.ApplicationInstallProgress.Created = card.Created
+			utils.ApplicationInstallProgress.Updated = card.Updated
 			assert.DeepEqual(t, card, utils.ApplicationInstallProgress)
 		} else if card.Id == utils.ZimaOSDataStationNotice.Id {
+			utils.ZimaOSDataStationNotice.Created = card.Created
+			utils.ZimaOSDataStationNotice.Updated = card.Updated
 			assert.DeepEqual(t, card, utils.ZimaOSDataStationNotice)
 		} else {
 			t.Errorf("unexpected card: %v", card)
@@ -78,5 +82,4 @@ func TestInsertAllTypeCardList(t *testing.T) {
 	cardList, err = yskService.YskCardList(context.Background())
 	assert.NilError(t, err)
 	assert.Equal(t, len(cardList), 2)
-
 }

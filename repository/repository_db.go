@@ -21,7 +21,7 @@ type DatabaseRepository struct {
 
 func (r *DatabaseRepository) GetYSKCardList() ([]ysk.YSKCard, error) {
 	var cardList []ysk.YSKCard
-	if err := r.persistDB.Find(&cardList).Error; err != nil {
+	if err := r.persistDB.Order("updated desc, id desc").Find(&cardList).Error; err != nil {
 		return nil, err
 	}
 	return cardList, nil
@@ -33,9 +33,11 @@ func (r *DatabaseRepository) UpsertYSKCard(card ysk.YSKCard) error {
 		UpdateAll: true,
 	}).Create(&card).Error
 }
+
 func (r *DatabaseRepository) DeleteYSKCard(id string) error {
 	return r.persistDB.Where("id LIKE ?", id+"%").Delete(&ysk.YSKCard{}).Error
 }
+
 func (r *DatabaseRepository) GetEventTypes() ([]model.EventType, error) {
 	var eventTypes []model.EventType
 
