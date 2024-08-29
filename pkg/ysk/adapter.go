@@ -49,8 +49,8 @@ type YSKCard struct {
 	RenderType RenderType     `json:"renderType"`
 	Content    YSKCardContent `json:"content"`
 
-	Updated int64 `gorm:"autoUpdateTime"`
-	Created int64 `gorm:"autoCreateTime"`
+	Updated int64 `json:"-" gorm:"autoUpdateTime"`
+	Created int64 `json:"-" gorm:"autoCreateTime"`
 }
 
 func (ysk YSKCard) WithId(id string) YSKCard {
