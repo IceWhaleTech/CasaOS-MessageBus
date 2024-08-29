@@ -8,8 +8,10 @@ import (
 	"github.com/IceWhaleTech/CasaOS-MessageBus/codegen"
 )
 
-type CartType string
-type YSKCardIcon string
+type (
+	CartType    string
+	YSKCardIcon string
+)
 
 const (
 	CardTypeTask      CartType = "task"
@@ -46,6 +48,9 @@ type YSKCard struct {
 	CardType   CartType       `json:"cardType"`
 	RenderType RenderType     `json:"renderType"`
 	Content    YSKCardContent `json:"content"`
+
+	Updated int64 `gorm:"autoUpdateTime"`
+	Created int64 `gorm:"autoCreateTime"`
 }
 
 func (ysk YSKCard) WithId(id string) YSKCard {
