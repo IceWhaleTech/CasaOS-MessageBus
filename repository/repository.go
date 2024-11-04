@@ -20,5 +20,8 @@ type Repository interface {
 	UpsertYSKCard(card ysk.YSKCard) error
 	DeleteYSKCard(id string) error
 
+	GetSettings(key string) (*model.Settings, error)
+	UpsertSettings(settings model.Settings) error
+
 	Close()
 }

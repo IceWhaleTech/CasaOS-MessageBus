@@ -21,6 +21,8 @@ type YSKService struct {
 	eventTypeService *EventTypeService
 }
 
+const YSKOnboardingFinishedKey = "ysk_onboarding_finished"
+
 func NewYSKService(
 	repository *repository.Repository,
 	ws *EventServiceWS,
@@ -60,11 +62,20 @@ func (s *YSKService) DeleteYSKCard(ctx context.Context, id string) error {
 }
 
 func (s *YSKService) Start(init bool) {
+	// 判断数据库
 	if init {
-
+		// only run once
+		settings, _ := (*s.repository).GetSettings(YSKOnboardingFinishedKey)
+		if settings != nil {
+			return
+		}
 		s.UpsertYSKCard(context.Background(), utils.ZimaOSDataStationNotice)
 		s.UpsertYSKCard(context.Background(), utils.ZimaOSFileManagementNotice)
 		s.UpsertYSKCard(context.Background(), utils.ZimaOSRemoteAccessNotice)
+		(*s.repository).UpsertSettings(model.Settings{
+			Key:   YSKOnboardingFinishedKey,
+			Value: "true",
+		})
 	}
 	// register event
 	s.eventTypeService.RegisterEventType(model.EventType{

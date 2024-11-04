@@ -46,6 +46,21 @@ func (r *DatabaseRepository) GetEventTypes() ([]model.EventType, error) {
 	return eventTypes, nil
 }
 
+func (r *DatabaseRepository) GetSettings(key string) (*model.Settings, error) {
+	var settings model.Settings
+	if err := r.persistDB.Where(&model.Settings{Key: key}).First(&settings).Error; err != nil {
+		return nil, err
+	}
+	return &settings, nil
+}
+
+func (r *DatabaseRepository) UpsertSettings(settings model.Settings) error {
+	return r.persistDB.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "key"}},
+		UpdateAll: true,
+	}).Create(&settings).Error
+}
+
 func (r *DatabaseRepository) RegisterEventType(eventType model.EventType) (*model.EventType, error) {
 	// upsert
 	if err := r.db.Clauses(clause.OnConflict{UpdateAll: true}).Create(&eventType).Error; err != nil {
@@ -173,6 +188,7 @@ func NewDatabaseRepository(databaseFilePath string, persistDatabaseFilePath stri
 
 	if err := persistDB.AutoMigrate(
 		&ysk.YSKCard{},
+		&model.Settings{},
 	); err != nil {
 		return nil, err
 	}
