@@ -83,6 +83,7 @@ func buildServer() *socketio.Server {
 	})
 
 	server.OnDisconnect("/", func(s socketio.Conn, reason string) {
+		server.Remove(s.ID())
 		// TODO add connector info. we need to know who is disconnecting
 		logger.Info("a socketio connection is disconnected", zap.Any("reason", reason))
 	})
