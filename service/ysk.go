@@ -83,6 +83,16 @@ func (s *YSKService) Start(init bool) {
 		Name:     common.EventTypeYSKCardDelete.Name,
 	})
 
+	// the event is frontend event.
+	// in casaos, it register by frontend. register by who call it.
+	// but in zimaos ui gen 2. the frontend lose register event type.
+	// so we had to register it here.
+	// but i think is not a good idea. it should register by who call it.
+	s.eventTypeService.RegisterEventType(model.EventType{
+		SourceID: "casaos-ui",
+		Name:     "casaos-ui:app:mircoapp_communicate",
+	})
+
 	channel, err := s.ws.Subscribe(common.SERVICENAME, []string{
 		common.EventTypeYSKCardUpsert.Name, common.EventTypeYSKCardDelete.Name,
 	})

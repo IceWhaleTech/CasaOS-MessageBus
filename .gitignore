@@ -23,3 +23,5 @@ node_modules/
 dist/
 .idea
 .package-lock.json
+up.sh
+CasaOS-MessageBus
