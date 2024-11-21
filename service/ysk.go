@@ -90,7 +90,7 @@ func (s *YSKService) Start(init bool) {
 	// but i think is not a good idea. it should register by who call it.
 	s.eventTypeService.RegisterEventType(model.EventType{
 		SourceID: "casaos-ui",
-		Name:     "app:mircoapp_communicate",
+		Name:     "casaos-ui:app:mircoapp_communicate",
 	})
 
 	channel, err := s.ws.Subscribe(common.SERVICENAME, []string{
