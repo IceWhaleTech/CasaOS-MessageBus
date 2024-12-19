@@ -3,7 +3,7 @@ module github.com/IceWhaleTech/CasaOS-MessageBus
 go 1.20
 
 require (
-	github.com/CorrectRoadH/go-socket.io v1.8.0-rc.3
+	github.com/CorrectRoadH/go-socket.io v1.8.0-rc.5
 	github.com/IceWhaleTech/CasaOS-Common v0.4.4-alpha2
 	github.com/glebarez/sqlite v1.7.0
 	github.com/gobwas/ws v1.1.0
@@ -54,6 +54,7 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.17 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
+	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
