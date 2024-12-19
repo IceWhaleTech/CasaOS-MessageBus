@@ -3,10 +3,12 @@ module github.com/IceWhaleTech/CasaOS-MessageBus
 go 1.20
 
 require (
+	github.com/CorrectRoadH/go-socket.io v1.8.0-rc.3
 	github.com/IceWhaleTech/CasaOS-Common v0.4.4-alpha2
 	github.com/glebarez/sqlite v1.7.0
 	github.com/gobwas/ws v1.1.0
 	github.com/json-iterator/go v1.1.12
+	github.com/samber/lo v1.46.0
 	go.uber.org/goleak v1.2.1
 	gorm.io/gorm v1.24.6
 	gotest.tools v2.2.0+incompatible
@@ -52,7 +54,6 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.17 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
-	github.com/samber/lo v1.46.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
@@ -75,7 +76,6 @@ require (
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/google/uuid v1.3.0
-	github.com/googollee/go-socket.io v1.8.0-rc.1
 	github.com/invopop/yaml v0.2.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/labstack/echo/v4 v4.10.2

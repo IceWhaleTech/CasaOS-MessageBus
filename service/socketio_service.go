@@ -4,13 +4,13 @@ import (
 	"context"
 	"net/http"
 
+	socketio "github.com/CorrectRoadH/go-socket.io"
+	"github.com/CorrectRoadH/go-socket.io/engineio"
+	"github.com/CorrectRoadH/go-socket.io/engineio/transport"
+	"github.com/CorrectRoadH/go-socket.io/engineio/transport/polling"
+	"github.com/CorrectRoadH/go-socket.io/engineio/transport/websocket"
 	"github.com/IceWhaleTech/CasaOS-Common/utils/logger"
 	"github.com/IceWhaleTech/CasaOS-MessageBus/model"
-	socketio "github.com/googollee/go-socket.io"
-	"github.com/googollee/go-socket.io/engineio"
-	"github.com/googollee/go-socket.io/engineio/transport"
-	"github.com/googollee/go-socket.io/engineio/transport/polling"
-	"github.com/googollee/go-socket.io/engineio/transport/websocket"
 	"go.uber.org/zap"
 )
 
