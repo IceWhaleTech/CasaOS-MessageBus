@@ -80,16 +80,6 @@ func (r *APIRoute) GetEventType(ctx echo.Context, sourceID codegen.SourceID, nam
 }
 
 func (r *APIRoute) PublishEvent(ctx echo.Context, sourceID codegen.SourceID, name codegen.EventName) error {
-	eventType, err := r.services.EventTypeService.GetEventType(sourceID, name)
-	if err != nil {
-		message := err.Error()
-		return ctx.JSON(http.StatusNotFound, codegen.ResponseNotFound{Message: &message})
-	}
-
-	if eventType == nil {
-		return ctx.JSON(http.StatusNotFound, codegen.ResponseNotFound{Message: utils.Ptr("not found")})
-	}
-
 	var properties map[string]string
 	body, err := ioutil.ReadAll(ctx.Request().Body)
 	if err != nil {
