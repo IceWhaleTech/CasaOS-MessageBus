@@ -73,6 +73,24 @@ builds:
       - arm
     goarm:
       - "7"
+  - id: casaos-message-bus-riscv64
+    binary: build/sysroot/usr/bin/casaos-message-bus
+    env:
+      - CC=riscv64-linux-gnu-gcc
+    ldflags:
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+      - -s
+      - -w
+      - -extldflags "-static"
+    tags:
+      - musl
+      - netgo
+      - osusergo
+    goos:
+      - linux
+    goarch:
+      - riscv64
   - id: casaos-message-bus-migration-tool-amd64
     binary: build/sysroot/usr/bin/casaos-message-bus-migration-tool
     hooks:
@@ -141,6 +159,25 @@ builds:
       - arm
     goarm:
       - "7"
+  - id: casaos-message-bus-migration-tool-riscv64
+    binary: build/sysroot/usr/bin/casaos-message-bus-migration-tool
+    main: ./cmd/migration-tool
+    env:
+      - CC=riscv64-linux-gnu-gcc
+    ldflags:
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+      - -s
+      - -w
+      - -extldflags "-static"
+    tags:
+      - musl
+      - netgo
+      - osusergo
+    goos:
+      - linux
+    goarch:
+      - riscv64
 archives:
   - name_template: >-
       {{ .Os }}-{{- if eq .Arch "arm" }}arm-7{{- else }}{{ .Arch }}{{- end }}-{{ .ProjectName }}-v{{ .Version }}
@@ -149,6 +186,7 @@ archives:
       - casaos-message-bus-amd64
       - casaos-message-bus-arm64
       - casaos-message-bus-arm-7
+      - casaos-message-bus-riscv64
     files:
       - build/**/*
   - name_template: >-
@@ -158,6 +196,7 @@ archives:
       - casaos-message-bus-migration-tool-amd64
       - casaos-message-bus-migration-tool-arm64
       - casaos-message-bus-migration-tool-arm-7
+      - casaos-message-bus-migration-tool-riscv64
     files:
       - build/sysroot/etc/**/*
 checksum:
